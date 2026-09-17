@@ -24,16 +24,16 @@ router.post(
                 });
             }
 
-            if (!["bank_transfer", "cash"].includes(method)) {
+            if (method !== "bank_transfer") {
                 return res.status(400).json({
                     success: false,
-                    message: "Metode pembayaran tidak valid",
+                    message: "Endpoint ini hanya untuk pembayaran bank transfer"
                 });
             }
 
             if (!mongoose.Types.ObjectId.isValid(orderId)){
                 return res.status(400).json ({
-                    succes: false,
+                    success: false,
                     message: "ID order tidak valid",
                 });
             }
@@ -64,42 +64,66 @@ router.post(
                 });
             }
 
-            if(order.orderType === "delivery" && method !== "bank_transfer") {
+            if(!req.file) {
                 return res.status(400).json({
-                    succes: false,
-                    message: "Delivery hanya dapat menggunakan bank transfer",
-                });
-            }
-
-            if (method === "bank_transfer" && !req.file) {
-                return res.status(400).json ({
-                    succes:false ,
-                    message: "Bukti transfer wajib diupload",
+                    success: false,
+                    message: "Bukti transfer wajib di upload",
                 });
             }
 
             const existingPayment = await Payment.findOne({
-                orderId: order._id,
+                orderId
             });
 
             if (existingPayment) {
-                return res.status(409).json({
-                    success: false,
-                    message: "Payment untuk order ini sudah dibuat",
-                });
+                //Payment masih menunggu verifikasi
+                if (existingPayment.status === "pending") {
+                    return res.status(400).json({
+                        success:false,
+                        message: "Bukti pembayaran sedang menunggu verifikasi",
+                    });
+                }
+
+                //Payment sudah diverifikasi
+                if (existingPayment.status === "verified") {
+                    return res.status(400).json({
+                        success:false,
+                        message: "Pembayaran untuk order ini sudah diverfikasi",
+                    });
+                }
+
+                // Payment ditolak, bisa upload bukti baru
+                if (existingPayment.status === "rejected") {
+                    existingPayment.amount = order.total;
+                    existingPayment.method = "bank_transfer";
+                    existingPayment.proofImage = req.file.filename;
+                    existingPayment.status = "pending";
+                    existingPayment.verifiedBy = null;
+                    existingPayment.verifiedAt = null;
+                    existingPayment.rejectionReason = null;
+
+                    await existingPayment.save();
+
+                    order.status = "payment_submitted";
+                    await order.save();
+
+                    return res.status(200).json({
+                        success: true,
+                        message: "Bukti pembayaran berhasil dikirim ulang",
+                        data: existingPayment,
+                    });
+                }
             }
 
             const payment = await Payment.create({
                 orderId: order._id,
                 amount: order.total,
                 method,
-                proofImage: req.file ? req.file.filename : null,
+                proofImage: req.file.filename,
             });
 
-            if(method === "bank_transfer") {
-                order.status = "payment_submitted";
-                await order.save();
-            }
+            order.status = "payment_submitted";
+            await order.save();
 
             res.status(201).json({
                 success: true,

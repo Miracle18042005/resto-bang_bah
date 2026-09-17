@@ -85,6 +85,13 @@ router.post("/", protect, async (req, res) => {
         let total = 0;
 
         for (const item of items) {
+            if(!mongoose.Types.ObjectId.isValid(item.menuId)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'ID menu ${item.menuId} tidak valid'
+                });
+            }
+
             const menu = await Menu.findById(item.menuId);
 
             if (!menu) {
@@ -151,10 +158,7 @@ router.post("/", protect, async (req, res) => {
                 ? deliveryAddress.trim()
                 : null,
 
-            status:
-            orderType === "takeaway" && paymentMethod === "cash"
-                ? "processing" 
-                : "waiting_payment",
+            status: "waiting_payment",
         });
 
         res.status(201).json({
@@ -222,32 +226,36 @@ router.get("/:id", protect, async (req, res) => {
             data: order,
         });
     } catch (error) {
-        res.status(400).json({
+        console.error(error);
+
+        res.status(500).json({
             success: false,
-            message: "ID order tidak valid",
+            message: "Gagal mengambil order",
         });
     }
 });
 
-router.post("/:id/cancel", protect, async(req, res)=> {
-    try{
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status (400).json ({
+router.post("/:id/cancel", protect, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
                 success: false,
                 message: "ID order tidak valid",
             });
         }
 
-        const order  = await Order.findById(req.params.id);
+        const order = await Order.findById(id);
 
-        if(!order){
+        if (!order) {
             return res.status(404).json({
                 success: false,
                 message: "Order tidak ditemukan",
             });
         }
 
-        if(
+        if (
             order.customer.userId.toString() !==
             req.user.userId
         ) {
@@ -260,17 +268,18 @@ router.post("/:id/cancel", protect, async(req, res)=> {
         const cancellableStatuses = [
             "waiting_payment",
             "payment_submitted",
-            "payment_rejected"
+            "payment_rejected",
         ];
 
-        if(!cancellableStatuses.includes(order.status)) {
+        if (!cancellableStatuses.includes(order.status)) {
             return res.status(400).json({
                 success: false,
                 message: "Order tidak dapat dibatalkan pada status ini",
             });
         }
-        
+
         order.status = "cancelled";
+
         await order.save();
 
         res.json({
@@ -279,6 +288,8 @@ router.post("/:id/cancel", protect, async(req, res)=> {
             data: order,
         });
     } catch (error) {
+        console.error(error);
+
         res.status(500).json({
             success: false,
             message: "Gagal membatalkan order",

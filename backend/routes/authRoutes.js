@@ -11,15 +11,47 @@ router.post("/register", async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
 
-        if (!name || !email || !password) {
+        if (!name || !email || !phone || !password) {
             return res.status(400).json({
                 success: false,
-                message: "Nama, email, dan password wajib diisi",
+                message: "Nama, email, nomor HP, dan password wajib diisi",
+            });
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+
+        if (name.trim().length < 2 || name.trim().length > 100) {
+            return res.status(400).json({
+                success: false,
+                message: "Nama harus antara 2 sampai 100 karakter",
+            });
+        }
+
+        if (phone.trim().length < 8 || phone.trim().length > 20) {
+            return res.status(400).json({
+                success: false,
+                message: "Nomor HP tidak valid",
+            });
+        }
+
+        if (password.length < 8 || password.length > 72) {
+            return res.status(400).json({
+                success: false,
+                message: "Password harus antara 8 sampai 72 karakter",
+            });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(normalizedEmail)) {
+            return res.status(400).json({
+                success: false,
+                message: "Format email tidak valid",
             });
         }
 
         const existingUser = await User.findOne({
-            email: email.toLowerCase().trim(),
+            email: normalizedEmail,
         });
 
         if (existingUser) {
@@ -32,9 +64,9 @@ router.post("/register", async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 12);
 
         const user = await User.create({
-            name,
-            email: email.toLowerCase().trim(),
-            phone,
+            name: name.trim(),
+            email: normalizedEmail,
+            phone: phone.trim(),
             password: hashedPassword,
         });
 
@@ -50,9 +82,11 @@ router.post("/register", async (req, res) => {
             },
         });
     } catch (error) {
-        res.status(400).json({
+        console.error(error);
+
+        res.status(500).json({
             success: false,
-            message: error.message,
+            message: "Gagal melakukan registrasi",
         });
     }
 });

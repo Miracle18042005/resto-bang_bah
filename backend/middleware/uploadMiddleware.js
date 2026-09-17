@@ -4,7 +4,12 @@ const crypto = require("crypto");
 const fs = require("fs");
 
 const createUploadMiddleware = (fieldName, folderName) => {
-    const destination = `uploads/${folderName}`;
+    const destination = path.join(
+        __dirname,
+        "..",
+        "uploads",
+        folderName
+    );
 
     // Buat folder otomatis kalau belum ada
     if (!fs.existsSync(destination)) {
@@ -27,14 +32,26 @@ const createUploadMiddleware = (fieldName, folderName) => {
         },
     });
 
-    const fileFilter = (req, file, cb) => {
-        const allowedTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/webp",
-        ];
+    const allowedMimeTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+    ];
 
-        if (!allowedTypes.includes(file.mimetype)) {
+    const allowedExtensions = [
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".webp",
+    ];
+
+    const fileFilter = (req, file, cb) => {
+        const extension = path.extname(file.originalname).toLowerCase();
+
+        if (
+            !allowedMimeTypes.includes(file.mimetype) ||
+            !allowedExtensions.includes(extension)
+        ) {
             return cb(
                 new Error("File harus berupa JPG, PNG, atau WebP")
             );
@@ -49,11 +66,33 @@ const createUploadMiddleware = (fieldName, folderName) => {
 
         limits: {
             fileSize: 5 * 1024 * 1024,
+            files: 1,
         },
     });
 
     return (req, res, next) => {
         upload.single(fieldName)(req, res, (error) => {
+            if (error instanceof multer.MulterError) {
+                if (error.code === "LIMIT_FILE_SIZE") {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Ukuran file maksimal 5 MB",
+                    });
+                }
+
+                if (error.code === "LIMIT_UNEXPECTED_FILE") {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Hanya boleh mengupload satu file",
+                    });
+                }
+
+                return res.status(400).json({
+                    success: false,
+                    message: "Upload file gagal",
+                });
+            }
+
             if (error) {
                 return res.status(400).json({
                     success: false,

@@ -24,6 +24,7 @@ const orderItemSchema = new mongoose.Schema(
             type: Number,
             required: true,
             min: 1,
+            max: 99,
         },
 
         subtotal: {

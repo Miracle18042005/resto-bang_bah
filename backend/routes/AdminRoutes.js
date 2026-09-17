@@ -5,10 +5,8 @@ const adminOnly = require("../middleware/adminMiddleware");
 const Order = require("../models/Order");
 const Payment = require("../models/Payment");
 const {
-    uploadPaymentProof,
     uploadPickupProof,
     uploadCourierProof,
-    uploadDeliveryProof,
 } = require("../middleware/uploadMiddleware");
 
 const router = express.Router();
@@ -254,22 +252,29 @@ router.post("/orders/:id/process", protect, adminOnly, async (req, res) => {
             });
         }
 
-        if (order.status !== "payment_verified") {
-            return res.status(400).json({
-                success: false,
-                message: "Order belum memiliki pembayaran yang terverifikasi",
-            });
-        }
-
-        const payment = await Payment.findOne({
-            orderId: order._id,
-        });
-
         const isCashTakeaway =
             order.orderType === "takeaway" &&
             order.paymentMethod === "cash";
 
-        if (!isCashTakeaway) {
+        if (isCashTakeaway) {
+            if (order.status !== "waiting_payment") {
+                return res.status(400).json({
+                    success: false,
+                    message: "Order cash takeaway tidak berada pada status yang benar",
+                });
+            }
+        } else {
+            if (order.status !== "payment_verified") {
+                return res.status(400).json({
+                    success: false,
+                    message: "Order belum memiliki pembayaran yang terverifikasi",
+                });
+            }
+
+            const payment = await Payment.findOne({
+                orderId: order._id,
+            });
+
             if (!payment || payment.status !== "verified") {
                 return res.status(400).json({
                     success: false,
@@ -371,14 +376,32 @@ router.post("/orders/:id/ready-for-delivery", protect, adminOnly, async(req, res
             });
         }
 
-        order.status = "ready_for_delivery";
-        await order.save();
+        if (order.paymentMethod !== "bank_transfer") {
+            return res.status(400).json({
+                success: false,
+                message: "Order delivery wajib menggunakan bank transfer",
+            });
+        }
 
-        res.json({
-            success:true,
-            message: "Order siap untuk dikirim",
-            data: order,
+            const payment = await Payment.findOne({
+            orderId: order._id,
         });
+
+        if (!payment || payment.method !== "bank_transfer" || payment.status !== "verified") {
+            return res.status(400).json({
+                success: false,
+                message: "Pembayaran delivery belum terverifikasi",
+            });
+        }
+
+            order.status = "ready_for_delivery";
+            await order.save();
+
+            res.json({
+                success:true,
+                message: "Order siap untuk dikirim",
+                data: order,
+            });
     } catch (error) {
         console.error(error);
 
@@ -439,10 +462,10 @@ router.post(
                 orderId: order._id,
             });
 
-            if (!payment) {
-                return res.status(404).json({
+            if (!payment || payment.method !== "bank_transfer") {
+                return res.status(400).json({
                     success: false,
-                    message: "Delivery hanya menggunakan bank transfer",
+                    message: "Payment delivery tidak ditemukan",
                 });
             }
 
@@ -450,6 +473,13 @@ router.post(
                 return res.status(400).json({
                     success:false,
                     message: "Pembayaran ini belum diverifikasi",
+                });
+            }
+
+            if (order.courierProofImage) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Bukti serah terima courier sudah diupload",
                 });
             }
 
@@ -552,6 +582,13 @@ router.post(
                 });
             }
 
+            if(order.pickupProofImage) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Bukti pickup sudah diupload",
+                });
+            }
+
             order.pickupProofImage = req.file.filename;
             order.status = "completed";
 
@@ -630,6 +667,13 @@ router.post(
                 orderId: order._id,
             });
 
+            if (order.pickupProofImage) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Bukti pickup sudah di upload"
+                })
+            }
+            
             // Untuk cash takeaway, payment dibuat
             // saat customer membayar di pickup.
             if (!payment) {
@@ -701,7 +745,7 @@ router.post("/orders/:id/cancel", protect, adminOnly, async(req,res) => {
 
         if(!order) {
             return res.status(404).json({
-                succces: false,
+                success: false,
                 message: "Order tidak ditemukan",
             });
         }

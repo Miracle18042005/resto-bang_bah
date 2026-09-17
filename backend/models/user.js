@@ -20,14 +20,17 @@ const userSchema = new mongoose.Schema(
 
         phone: {
             type: String,
+            required: [true, "Nomor telepon wajib diisi"],
             trim: true,
+            minlength: [8, "Nomor telepon minimal 8 karakter"],
             maxlength: [20, "Nomor telepon maksimal 20 karakter"],
         },
 
         password: {
             type: String,
             required: [true, "Password wajib diisi"],
-            minlength: [8,"Password minimal 8 karakter"],
+            minlength: [8, "Password minimal 8 karakter"],
+            maxlength: [72, "Password maksimal 72 karakter"],
         },
 
         role: {
