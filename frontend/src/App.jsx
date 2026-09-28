@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import "./css/App.css";
 import { getMenus } from "./services/api";
 import Checkout from "./pages/checkout";
 import Payment from "./pages/payment";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import MyOrders from "./pages/myorders";
+import OrderDetail from "./pages/OrderDetail";
 
 function App() {
     const [menus, setMenus] = useState([]);
@@ -14,9 +16,30 @@ function App() {
 
     const [page, setPage] = useState("home");
     const [createdOrder, setCreatedOrder] = useState(null);
+    const [selectedOrderId, setSelectedOrderId] = useState(null);
+
     const [user, setUser] = useState(() => {
         const savedUser = localStorage.getItem("user");
-        return savedUser ? JSON.parse(savedUser) : null;
+
+        if (!savedUser) {
+            return null;
+        }
+
+        try {
+            const parsedUser = JSON.parse(savedUser);
+
+            if (parsedUser.role === "admin") {
+                localStorage.removeItem("user");
+                localStorage.removeItem("token");
+                return null;
+            }
+
+            return parsedUser;
+        } catch {
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            return null;
+        }
     });
 
     useEffect(() => {
@@ -95,17 +118,69 @@ function App() {
     );
 
     const totalPrice = cart.reduce(
-        (total, item) => total + item.price * item.quantity,
+        (total, item) =>
+            total + item.price * item.quantity,
         0
     );
 
+    const sendOrderToWhatsApp = (order) => {
+        const phoneNumber = "085123607185";
+
+        const itemText = order.items
+            ?.map(
+                (item, index) => 
+                    `${index + 1}. ${item.name} x ${item.quantity} = Rp ${Number(
+                        item.subtotal
+                    ).toLocaleString("id-ID")}`
+            )
+            .join("\n");
+
+        const getOrderTypeText = 
+            order.orderType === "delivery"
+            ? "Delivery"
+            : "Takeaway";
+
+        const paymentText = 
+            order.paymentMethod === "bank_transfer"
+            ? "Bank_transfer"
+            : "Cash"
+
+            const addressText 
+                = order.orderType === "delivery"
+                ? `\nAlamat: ${order.deliveryAddress || "-"}`
+                : "";
+
+            const message = `Halo Bang Bah
+            
+            Saya baru membuat pesanan.
+            
+            Nomor Pesanan: ${order.orderNumber}
+            
+            Pesanan:
+            ${itemText}
+            
+            Total: Rp ${Number(
+                order.totalAmount || order.total || 0
+            ).toLocaleString("id-ID")}
+            
+            Tipe: ${getOrderTypeText}
+            Pembayaran: ${paymentText}${addressText}
+            
+            Mohon diproses ya. Terimakasih`;
+
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+                message
+            )}`;
+            window.open(whatsappUrl, "_blank");
+    };
+
     const handleLogin = (result) => {
         setUser(result.user);
-        
+
         if (cart.length > 0) {
-          setPage("checkout");
+            setPage("checkout");
         } else {
-          setPage("home")
+            setPage("home");
         }
     };
 
@@ -116,6 +191,7 @@ function App() {
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+
         setUser(null);
         setPage("home");
     };
@@ -150,130 +226,159 @@ function App() {
     }
 
     if (page === "my-orders") {
-      return (
-        <MyOrders
-          onBack={() => setPage("home")}
-          onPayment={(order) => {
-            setCreatedOrder(order);
-            setPage("payment");
-          }}
-        />
-      );
+        return (
+            <MyOrders
+                onBack={() => setPage("home")}
+                onPayment={(order) => {
+                    setCreatedOrder(order);
+                    setPage("payment");
+                }}
+                onDetail={(order) => {
+                    setSelectedOrderId(order._id);
+                    setPage("order-detail");
+                }}
+            />
+        );
+    }
+
+    if (page === "order-detail") {
+        return (
+            <OrderDetail
+                orderId={selectedOrderId}
+                onBack={() => setPage("my-orders")}
+            />
+        );
     }
 
     if (page === "checkout") {
-    return (
-        <Checkout
-            cart={cart}
-            totalPrice={totalPrice}
-            onBack={() => setPage("home")}
-            onOrderCreated={(order) => {
-                console.log("Order berhasil dibuat:", order);
+        return (
+            <Checkout
+                cart={cart}
+                totalPrice={totalPrice}
+                onBack={() => setPage("home")}
+                onOrderCreated={(order) => {
+                    console.log(
+                        "Order berhasil dibuat:",
+                        order
+                    );
 
-                setCreatedOrder(order);
-                setCart([]);
+                    setCreatedOrder(order);
+                    setCart([]);
 
-                if (order.paymentMethod === "bank_transfer") {
-                    setPage("payment");
-                } else {
-                    setPage("home");
+                    if (
+                        order.paymentMethod ===
+                        "bank_transfer"
+                    ) {
+                        setPage("payment");
+                    } else {
+                        setPage("home");
+
+                        alert(
+                            `Pesanan ${order.orderNumber} berhasil dibuat!`
+                        );
+
+                        sendOrderToWhatsApp(order);
+                    }
+                }}
+            />
+        );
+    }
+
+    if (page === "payment") {
+        return (
+            <Payment
+                order={createdOrder}
+                onBack={() => setPage("home")}
+                onPaymentSubmitted={(payment) => {
+                    console.log(
+                        "Bukti pembayaran berhasil dikirim:",
+                        payment
+                    );
 
                     alert(
-                        `Pesanan ${order.orderNumber} berhasil dibuat!`
+                        `Bukti pembayaran untuk pesanan ${createdOrder.orderNumber} berhasil dikirim!`
                     );
-                }
-            }}
-        />
-    );
-}
 
-if (page === "payment") {
-    return (
-        <Payment
-            order={createdOrder}
-            onBack={() => setPage("home")}
-            onPaymentSubmitted={(payment) => {
-                console.log(
-                    "Bukti pembayaran berhasil dikirim:",
-                    payment
-                );
-
-                setPage("home");
-
-                alert(
-                    `Bukti pembayaran untuk pesanan ${createdOrder.orderNumber} berhasil dikirim!`
-                );
-            }}
-        />
-    );
-}
+                    setPage("home");
+                }}
+            />
+        );
+    }
 
     return (
         <>
             <nav className="navbar">
-    <div className="brand">
-        <span className="brand-main">Bang Bah</span>
-        <span className="brand-sub">
-            Ayam Bakar & Ayam Goreng
-        </span>
-    </div>
+                <div className="brand">
+                    <span className="brand-main">
+                        Bang Bah
+                    </span>
 
-    <div className="nav-links">
-        <a
-            href="#menu"
-            onClick={() => setPage("home")}
-        >
-            Menu
-        </a>
+                    <span className="brand-sub">
+                        Ayam Bakar & Ayam Goreng
+                    </span>
+                </div>
 
-        <a
-            href="#cart"
-            onClick={() => setPage("home")}
-        >
-            Keranjang
-        </a>
+                <div className="nav-links">
+                    <a
+                        href="#menu"
+                        onClick={() => setPage("home")}
+                    >
+                        Menu
+                    </a>
 
-        {user && (
-          <a 
-          href="#orders"
-          onClick={() => setPage ("my-orders")}
-          >
-            Pesanan Saya
-          </a>
-        )}
-    </div>
+                    <a
+                        href="#cart"
+                        onClick={() => setPage("home")}
+                    >
+                        Keranjang
+                    </a>
 
-    <div className="nav-actions">
-        {user ? (
-            <button
-                className="cart-button"
-                onClick={handleLogout}
-            >
-                Logout
-            </button>
-        ) : (
-            <button
-                className="cart-button"
-                onClick={() => setPage("login")}
-            >
-                Login
-            </button>
-        )}
+                    {user && (
+                        <a
+                            href="#orders"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setPage("my-orders");
+                            }}
+                        >
+                            Pesanan Saya
+                        </a>
+                    )}
+                </div>
 
-        <button
-            className="cart-button"
-            onClick={() =>
-                document
-                    .getElementById("cart")
-                    ?.scrollIntoView({
-                        behavior: "smooth",
-                    })
-            }
-        >
-            🛒 <span>{totalItems}</span>
-        </button>
-    </div>
-</nav>
+                <div className="nav-actions">
+                    {user ? (
+                        <button
+                            className="cart-button"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
+                    ) : (
+                        <button
+                            className="cart-button"
+                            onClick={() =>
+                                setPage("login")
+                            }
+                        >
+                            Login
+                        </button>
+                    )}
+
+                    <button
+                        className="cart-button"
+                        onClick={() =>
+                            document
+                                .getElementById("cart")
+                                ?.scrollIntoView({
+                                    behavior: "smooth",
+                                })
+                        }
+                    >
+                        🛒 <span>{totalItems}</span>
+                    </button>
+                </div>
+            </nav>
 
             <section className="hero">
                 <div className="hero-content">
@@ -286,8 +391,9 @@ if (page === "payment") {
                     </h1>
 
                     <p>
-                        Pesan makanan favoritmu dengan mudah.
-                        Fresh, enak, dan siap disantap.
+                        Pesan makanan favoritmu dengan
+                        mudah. Fresh, enak, dan siap
+                        disantap.
                     </p>
 
                     <button
@@ -305,7 +411,10 @@ if (page === "payment") {
                 </div>
             </section>
 
-            <section id="menu" className="menu-section">
+            <section
+                id="menu"
+                className="menu-section"
+            >
                 <div className="section-header">
                     <span>MENU KAMI</span>
 
@@ -325,49 +434,73 @@ if (page === "payment") {
                 )}
 
                 <div className="menu-grid">
-                    {menus.map((menu) => (
-                        <div
-                            className="menu-card"
-                            key={menu._id}
-                        >
-                            <div className="menu-image">
-                                🍗
-                            </div>
+                    {menus
+                        .filter(
+                            (menu) =>
+                                menu.isAvailable !== false
+                        )
+                        .map((menu) => (
+                            <div
+                                className="menu-card"
+                                key={menu._id}
+                            >
+                                <div className="menu-image">
+                                    {menu.image ? (
+                                        <img
+                                            src={`http://localhost:5000/uploads/menus/${menu.image}`}
+                                            alt={menu.name}
+                                            onError={(e) => {
+                                                e.currentTarget.style.display =
+                                                    "none";
+                                            }}
+                                        />
+                                    ) : (
+                                        "🍗"
+                                    )}
+                                </div>
 
-                            <div className="menu-info">
-                                <h3>{menu.name}</h3>
+                                <div className="menu-info">
+                                    <h3>
+                                        {menu.name}
+                                    </h3>
 
-                                <p>
-                                    {menu.description ||
-                                        "Menu lezat Resto Bang Bah."}
-                                </p>
+                                    <p>
+                                        {menu.description ||
+                                            "Menu lezat Resto Bang Bah."}
+                                    </p>
 
-                                <div className="menu-bottom">
-                                    <strong>
-                                        Rp{" "}
-                                        {menu.price.toLocaleString(
-                                            "id-ID"
-                                        )}
-                                    </strong>
+                                    <div className="menu-bottom">
+                                        <strong>
+                                            Rp{" "}
+                                            {menu.price.toLocaleString(
+                                                "id-ID"
+                                            )}
+                                        </strong>
 
-                                    <button
-                                        onClick={() =>
-                                            addToCart(menu)
-                                        }
-                                    >
-                                        + Tambah
-                                    </button>
+                                        <button
+                                            onClick={() =>
+                                                addToCart(
+                                                    menu
+                                                )
+                                            }
+                                        >
+                                            + Tambah
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
                 </div>
             </section>
 
-            <section id="cart" className="cart-section">
+            <section
+                id="cart"
+                className="cart-section"
+            >
                 <div className="cart-header">
                     <div>
                         <span>KERANJANG</span>
+
                         <h2>Pesanan kamu</h2>
                     </div>
 
@@ -389,7 +522,9 @@ if (page === "payment") {
                                     key={item._id}
                                 >
                                     <div>
-                                        <h3>{item.name}</h3>
+                                        <h3>
+                                            {item.name}
+                                        </h3>
 
                                         <p>
                                             Rp{" "}

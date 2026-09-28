@@ -7,6 +7,7 @@ const Payment = require("../models/Payment");
 const {
     uploadPickupProof,
     uploadCourierProof,
+    uploadDeliveryProof,
 } = require("../middleware/uploadMiddleware");
 
 const router = express.Router();
@@ -505,6 +506,84 @@ router.post(
 );
 
 router.post(
+    "/orders/:id/delivered",
+    protect,
+    adminOnly,
+    uploadDeliveryProof,
+    async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "ID order tidak valid",
+                });
+            }
+
+            if (!req.file) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Bukti pesanan diterima wajib diupload",
+                });
+            }
+
+            const order = await Order.findById(id);
+
+            if (!order) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Order tidak ditemukan",
+                });
+            }
+
+            if (order.orderType !== "delivery") {
+                return res.status(400).json({
+                    success: false,
+                    message: "Order ini bukan delivery",
+                });
+            }
+
+            if (order.status !== "out_for_delivery") {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Order belum sedang dalam perjalanan",
+                });
+            }
+
+            if (order.deliveryProofImage) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Bukti pesanan diterima sudah diupload",
+                });
+            }
+
+            order.deliveryProofImage = req.file.filename;
+            order.status = "completed";
+
+            await order.save();
+
+            res.json({
+                success: true,
+                message:
+                    "Pesanan diterima dan order berhasil diselesaikan",
+                data: order,
+            });
+        } catch (error) {
+            console.error(error);
+
+            res.status(500).json({
+                success: false,
+                message:
+                    "Gagal mengonfirmasi pesanan diterima",
+            });
+        }
+    }
+);
+
+router.post(
     "/orders/:id/pickup",
     protect,
     adminOnly,
@@ -781,6 +860,53 @@ router.post("/orders/:id/cancel", protect, adminOnly, async(req,res) => {
         res.status(500).json({
             success: false,
             message: "Gagal membatalkan order",
+        });
+    }
+});
+
+router.post("/orders/:id/cancel", protect, adminOnly, async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: "Pesanan tidak ditemukan",
+            });
+        }
+
+        const cancellableStatuses = [
+            "waiting_payment",
+            "payment_submitted",
+            "payment_rejected",
+            "payment_verified",
+            "processing",
+            "ready_for_pickup",
+            "ready_for_delivery",
+        ];
+
+        if (!cancellableStatuses.includes(order.status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Pesanan tidak dapat dibatalkan pada status ini",
+            });
+        }
+
+        order.status = "cancelled";
+
+        await order.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Pesanan berhasil dibatalkan",
+            data: order,
+        });
+    } catch (error) {
+        console.error("Cancel order error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Gagal membatalkan pesanan",
         });
     }
 });

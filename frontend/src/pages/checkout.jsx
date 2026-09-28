@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createOrder } from "../services/api";
+import "../css/checkout.css";
 
 function Checkout({ cart, totalPrice, onBack, onOrderCreated }) {
     const [orderType, setOrderType] = useState("takeaway");

@@ -125,9 +125,15 @@ const uploadDeliveryProof = createUploadMiddleware(
     "orders"
 );
 
+const uploadMenuImage = createUploadMiddleware(
+    "menuImage",
+    "menus"
+);
+
 module.exports = {
     uploadPaymentProof,
     uploadPickupProof,
     uploadCourierProof,
     uploadDeliveryProof,
+    uploadMenuImage,
 };

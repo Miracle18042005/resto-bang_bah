@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const protect = require("../middleware/authMiddleware");
 const Menu = require("../models/menu");
 const Order = require("../models/Order");
+const Payment = require("../models/Payment");
 const User = require("../models/user");
 const {
     uploadDeliveryProof,
@@ -182,9 +183,47 @@ router.get("/my-orders", protect, async (req, res) => {
             "customer.userId": req.user.userId,
         }).sort({ createdAt: -1 });
 
+        const orderIds = orders.map((order) => order._id);
+
+        const payments = await Payment.find({
+            orderId: { $in: orderIds },
+        });
+
+        const paymentMap = new Map();
+
+        payments.forEach((payment) => {
+            paymentMap.set(
+                payment.orderId.toString(),
+                payment
+            );
+        });
+
+        const ordersWithPayment = orders.map((order) => {
+            const payment = paymentMap.get(
+                order._id.toString()
+            );
+
+            return {
+                ...order.toObject(),
+
+                paymentInfo: payment
+                    ? {
+                          status: payment.status,
+                          method: payment.method,
+                          amount: payment.amount,
+                          proofImage: payment.proofImage,
+                          rejectionReason:
+                              payment.rejectionReason || null,
+                          verifiedAt:
+                              payment.verifiedAt || null,
+                      }
+                    : null,
+            };
+        });
+
         res.json({
             success: true,
-            data: orders,
+            data: ordersWithPayment,
         });
     } catch (error) {
         console.error(error);

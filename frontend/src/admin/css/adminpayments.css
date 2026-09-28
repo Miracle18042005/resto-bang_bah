@@ -1,0 +1,347 @@
+/* =========================
+   ADMIN PAYMENTS
+========================= */
+
+.admin-payments {
+    width: 100%;
+}
+
+.payment-admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.payment-admin-card {
+    overflow: hidden;
+    border: 1px solid #e8e0d9;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 5px 18px rgba(50, 35, 25, 0.05);
+}
+
+.payment-admin-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 20px;
+    border-bottom: 1px solid #eee7e1;
+    background: #fcfbfa;
+}
+
+.payment-admin-header > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.payment-admin-header strong {
+    overflow: hidden;
+    color: #49372c;
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.payment-admin-header span:not(.payment-pending-badge) {
+    color: #91877f;
+    font-size: 11px;
+}
+
+.payment-pending-badge {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #fff4df;
+    color: #9a681d;
+    font-size: 10px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.payment-admin-info {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 18px 20px 0;
+    padding: 15px;
+    border-radius: 11px;
+    background: #faf7f4;
+}
+
+.payment-admin-info > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.payment-admin-info span {
+    color: #958b83;
+    font-size: 10px;
+}
+
+.payment-admin-info strong {
+    overflow: hidden;
+    color: #59483d;
+    font-size: 12px;
+    text-overflow: ellipsis;
+}
+
+.payment-admin-info small {
+    overflow: hidden;
+    color: #81776f;
+    font-size: 10px;
+    text-overflow: ellipsis;
+}
+
+.payment-proof-box {
+    margin: 16px 20px 0;
+    padding: 14px;
+    border: 1px solid #e8e0d9;
+    border-radius: 11px;
+    background: #fcfbfa;
+}
+
+.payment-proof-box > span {
+    display: block;
+    margin-bottom: 10px;
+    color: #59483d;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.payment-proof-box a {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.payment-proof-image {
+    display: block;
+    width: 220px;
+    max-width: 100%;
+    max-height: 240px;
+    object-fit: cover;
+    border: 1px solid #e5dcd5;
+    border-radius: 9px;
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.payment-proof-image:hover {
+    opacity: 0.9;
+    transform: scale(1.01);
+}
+
+.payment-proof-box small {
+    display: block;
+    margin-top: 7px;
+    color: #9a9088;
+    font-size: 10px;
+}
+
+.reject-reason-input {
+    display: block;
+    width: calc(100% - 40px);
+    min-height: 90px;
+    margin: 16px 20px 0;
+    padding: 11px 12px;
+    box-sizing: border-box;
+    resize: vertical;
+    border: 1px solid #ded4cc;
+    border-radius: 9px;
+    outline: none;
+    background: #ffffff;
+    color: #59483d;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.5;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.reject-reason-input::placeholder {
+    color: #a39a93;
+}
+
+.reject-reason-input:focus {
+    border-color: #a77a5b;
+    box-shadow: 0 0 0 3px rgba(140, 91, 60, 0.08);
+}
+
+.payment-admin-actions {
+    display: flex;
+    gap: 9px;
+    margin-top: 18px;
+    padding: 16px 20px;
+    border-top: 1px solid #eee7e1;
+    background: #fcfbfa;
+}
+
+.payment-verify-button,
+.payment-reject-button {
+    flex: 1;
+    min-height: 40px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.payment-verify-button {
+    border: 1px solid #5f8b68;
+    background: #5f8b68;
+    color: #ffffff;
+}
+
+.payment-verify-button:hover:not(:disabled) {
+    border-color: #4d7656;
+    background: #4d7656;
+}
+
+.payment-reject-button {
+    border: 1px solid #d8b8b8;
+    background: #fffafa;
+    color: #a14b4b;
+}
+
+.payment-reject-button:hover:not(:disabled) {
+    border-color: #c99f9f;
+    background: #fff0f0;
+}
+
+.payment-verify-button:active:not(:disabled),
+.payment-reject-button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.payment-verify-button:disabled,
+.payment-reject-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.empty-payment {
+    padding: 35px 20px;
+    text-align: center;
+}
+
+.empty-payment-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: #eaf6ed;
+    color: #397247;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.empty-payment h3 {
+    margin: 0;
+    color: #59483d;
+    font-size: 15px;
+}
+
+.empty-payment p {
+    margin: 7px 0 0;
+    color: #91877f;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 800px) {
+    .payment-admin-info {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .payment-admin-info > div:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+    .payment-admin-list {
+        gap: 14px;
+    }
+
+    .payment-admin-card {
+        border-radius: 13px;
+    }
+
+    .payment-admin-header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .payment-pending-badge {
+        align-self: flex-start;
+    }
+
+    .payment-admin-info {
+        grid-template-columns: 1fr 1fr;
+        margin: 15px 15px 0;
+        padding: 13px;
+    }
+
+    .payment-proof-box {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+
+    .reject-reason-input {
+        width: calc(100% - 30px);
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+
+    .payment-admin-actions {
+        flex-direction: column;
+        padding: 14px 15px;
+    }
+
+    .payment-verify-button,
+    .payment-reject-button {
+        width: 100%;
+    }
+
+    .payment-proof-image {
+        width: 100%;
+        max-width: 280px;
+        max-height: 240px;
+    }
+}
+
+@media (max-width: 380px) {
+    .payment-admin-info {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-admin-info > div:last-child {
+        grid-column: auto;
+    }
+}

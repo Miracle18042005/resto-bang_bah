@@ -1,0 +1,255 @@
+/* =========================
+   ADMIN LOGIN
+========================= */
+
+.admin-login-page {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #f3e6dc 0,
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #faf7f4,
+            #f2ebe5
+        );
+}
+
+/* =========================
+   LOGIN CARD
+========================= */
+
+.admin-login-card {
+    width: 100%;
+    max-width: 420px;
+
+    padding: 34px;
+
+    border: 1px solid #e7ddd5;
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 18px 50px rgba(54, 38, 28, 0.10);
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.admin-login-logo {
+    margin-bottom: 28px;
+
+    text-align: center;
+}
+
+.admin-login-icon {
+    width: 64px;
+    height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 14px;
+
+    border-radius: 18px;
+
+    background: #f5ebe4;
+
+    font-size: 30px;
+
+    box-shadow:
+        0 8px 20px rgba(107, 73, 52, 0.08);
+}
+
+.admin-login-logo h1 {
+    margin: 0;
+
+    color: #49372c;
+
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.admin-login-logo p {
+    margin: 7px 0 0;
+
+    color: #8b8179;
+
+    font-size: 13px;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.admin-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.admin-login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.admin-login-field label {
+    color: #49372c;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-login-field input {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 13px 14px;
+
+    border: 1px solid #ded4cc;
+    border-radius: 10px;
+
+    outline: none;
+
+    background: #ffffff;
+    color: #342820;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.admin-login-field input::placeholder {
+    color: #aaa19b;
+}
+
+.admin-login-field input:focus {
+    border-color: #8c5b3c;
+
+    background: #fffdfc;
+
+    box-shadow:
+        0 0 0 3px rgba(140, 91, 60, 0.10);
+}
+
+/* =========================
+   ERROR
+========================= */
+
+.admin-login-error {
+    padding: 12px 13px;
+
+    border: 1px solid #f0caca;
+    border-radius: 9px;
+
+    background: #fff1f1;
+    color: #a32e2e;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.admin-login-button {
+    width: 100%;
+
+    margin-top: 2px;
+    padding: 13px 16px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #8c5b3c;
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.admin-login-button:hover:not(:disabled) {
+    background: #754a30;
+
+    box-shadow:
+        0 7px 18px rgba(107, 73, 52, 0.18);
+}
+
+.admin-login-button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.admin-login-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+    .admin-login-page {
+        padding: 18px;
+    }
+
+    .admin-login-card {
+        padding: 26px 20px;
+
+        border-radius: 16px;
+    }
+
+    .admin-login-logo {
+        margin-bottom: 24px;
+    }
+
+    .admin-login-icon {
+        width: 58px;
+        height: 58px;
+
+        border-radius: 16px;
+
+        font-size: 27px;
+    }
+
+    .admin-login-logo h1 {
+        font-size: 25px;
+    }
+}
+
+@media (max-width: 380px) {
+    .admin-login-page {
+        padding: 12px;
+    }
+
+    .admin-login-card {
+        padding: 23px 16px;
+    }
+}

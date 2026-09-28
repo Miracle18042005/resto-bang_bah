@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../css/login.css";
 
 function Login({ onLogin, onBack, onRegister }) {
     const [email, setEmail] = useState("");
@@ -33,12 +34,27 @@ function Login({ onLogin, onBack, onRegister }) {
             const token = result.data?.token;
             const loggedInUser = result.data?.user;
 
-            if (!token) {
-                throw new Error("Token login tidak ditemukan");
+            if (!token || !loggedInUser) {
+                throw new Error(
+                    "Data login tidak ditemukan"
+                );
             }
 
-            localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(loggedInUser));
+            if (loggedInUser.role === "admin") {
+                throw new Error(
+                    "Akun admin harus login melalui halaman admin"
+                )
+            }
+
+            localStorage.setItem(
+                "token",
+                token
+            );
+            
+            localStorage.setItem(
+                "user",
+                JSON.stringify(loggedInUser)
+            );
 
             onLogin({
                 token,
