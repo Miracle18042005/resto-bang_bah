@@ -1,0 +1,793 @@
+.customer-page {
+    min-height: 100vh;
+    padding: 24px 16px 100px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.customer-page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.customer-page-header button {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 12px;
+    background: #f1f1f1;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.customer-page-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.customer-page-header p {
+    margin: 4px 0 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.customer-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+}
+
+.customer-card h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.customer-card p {
+    color: #666;
+    line-height: 1.6;
+}
+
+.customer-card-icon {
+    font-size: 34px;
+    margin-bottom: 12px;
+}
+
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.info-item {
+    display: flex;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 14px;
+    background: #f8f8f8;
+}
+
+.info-item > span {
+    font-size: 25px;
+}
+
+.info-item strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.info-item p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.tracking-order {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.tracking-order span {
+    color: #777;
+}
+
+.tracking-order strong {
+    font-size: 14px;
+}
+
+.tracking-timeline {
+    margin-top: 24px;
+}
+
+.tracking-step {
+    display: flex;
+    gap: 14px;
+    position: relative;
+    padding-bottom: 28px;
+}
+
+.tracking-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 17px;
+    top: 36px;
+    width: 2px;
+    height: calc(100% - 25px);
+    background: #ddd;
+}
+
+.tracking-step.active::after {
+    background: #222;
+}
+
+.tracking-dot {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 50%;
+    background: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    z-index: 1;
+}
+
+.tracking-step.active .tracking-dot {
+    background: #222;
+    color: white;
+}
+
+.tracking-step strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.tracking-step p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    font-size: 55px;
+    margin-bottom: 16px;
+}
+
+.empty-state h2 {
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: #777;
+}
+
+.favorite-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.favorite-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 15px;
+    background: #f8f8f8;
+    border-radius: 14px;
+}
+
+.favorite-item p {
+    margin: 5px 0 0;
+}
+
+.primary-button {
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    background: #222;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.promo-card {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    padding: 22px;
+    margin-bottom: 16px;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+}
+
+.promo-icon {
+    width: 65px;
+    height: 65px;
+    min-width: 65px;
+    border-radius: 18px;
+    background: #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+}
+
+.promo-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.promo-card h2 {
+    margin: 6px 0;
+}
+
+.promo-card p {
+    margin: 0;
+    color: #666;
+}
+
+.about-hero {
+    text-align: center;
+    padding: 35px 20px;
+    margin-bottom: 16px;
+    border-radius: 22px;
+    background: #f5f5f5;
+}
+
+.about-logo {
+    font-size: 65px;
+}
+
+.about-hero h2 {
+    margin: 10px 0 5px;
+}
+
+.about-hero p {
+    margin: 0;
+    color: #666;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.feature-grid > div {
+    padding: 16px;
+    border-radius: 14px;
+    background: #f8f8f8;
+}
+
+.feature-grid span {
+    display: block;
+    font-size: 26px;
+    margin-bottom: 8px;
+}
+
+.feature-grid strong {
+    display: block;
+}
+
+.feature-grid p {
+    font-size: 13px;
+    margin: 5px 0 0;
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.faq-item {
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-item summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.faq-item p {
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.help-contact {
+    text-align: center;
+}
+
+.account-profile {
+    text-align: center;
+    padding: 30px 20px;
+    margin-bottom: 16px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+}
+
+.account-avatar {
+    width: 75px;
+    height: 75px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: #222;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.account-profile h2 {
+    margin: 0 0 5px;
+}
+
+.account-profile p {
+    margin: 0;
+    color: #777;
+}
+
+.account-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.account-info div {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.account-info span {
+    color: #777;
+}
+
+.logout-button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: #eee;
+    color: #222;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+@media (min-width: 769px) {
+    .customer-page {
+        padding-top: 40px;
+        padding-bottom: 50px;
+    }
+}
+
+/* =========================================
+   CATERING PAGE - COMPLETE UI
+========================================= */
+
+.customer-page {
+    min-height: 100vh;
+    padding: 30px 6% 60px;
+    background: #fafafa;
+}
+
+/* HEADER */
+
+.customer-page-header {
+    max-width: 1100px;
+    margin: 0 auto 45px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.customer-back-button {
+    align-self: flex-start;
+
+    border: none;
+    background: transparent;
+
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    padding: 5px 0;
+}
+
+.customer-back-button:hover {
+    color: #111;
+}
+
+.customer-page-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #888;
+}
+
+.customer-page-header h1 {
+    margin: 8px 0 10px;
+
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.1;
+
+    color: #222;
+}
+
+.customer-page-header p {
+    max-width: 650px;
+
+    margin: 0;
+
+    color: #777;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+/* SECTION */
+
+.customer-page-section {
+    max-width: 1100px;
+    margin: 0 auto 55px;
+}
+
+.customer-section-heading {
+    margin-bottom: 25px;
+}
+
+.customer-section-heading > span {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #999;
+}
+
+.customer-section-heading h2 {
+    margin: 7px 0 8px;
+
+    font-size: 30px;
+    line-height: 1.2;
+
+    color: #222;
+}
+
+.customer-section-heading p {
+    margin: 0;
+
+    color: #777;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* PACKAGE CARDS */
+
+.customer-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.customer-info-card {
+    padding: 25px;
+
+    background: #ffffff;
+
+    border: 1px solid #eeeeee;
+    border-radius: 18px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.customer-info-card:hover {
+    transform: translateY(-5px);
+
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.customer-info-icon {
+    width: 55px;
+    height: 55px;
+
+    margin-bottom: 18px;
+
+    border-radius: 15px;
+
+    background: #f5f5f5;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 27px;
+}
+
+.customer-info-card h3 {
+    margin: 0 0 10px;
+
+    font-size: 20px;
+    color: #222;
+}
+
+.customer-info-card p {
+    min-height: 65px;
+
+    margin: 0 0 15px;
+
+    color: #777;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.customer-info-card strong {
+    display: block;
+
+    margin-bottom: 18px;
+
+    color: #222;
+    font-size: 15px;
+}
+
+/* BUTTON */
+
+.customer-primary-button {
+    border: none;
+    border-radius: 10px;
+
+    padding: 12px 18px;
+
+    background: #222;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+.customer-primary-button:hover {
+    background: #111;
+    transform: translateY(-1px);
+}
+
+/* EVENT */
+
+.catering-event-section {
+    margin-top: 10px;
+}
+
+.catering-event-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.catering-event-card {
+    min-height: 70px;
+
+    padding: 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #eeeeee;
+    border-radius: 14px;
+
+    display: flex;
+    align-items: center;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #333;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.catering-event-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+}
+
+/* CONTACT */
+
+.catering-contact-card {
+    max-width: 1100px;
+
+    margin: 20px auto 0;
+
+    padding: 38px;
+
+    border-radius: 22px;
+
+    background: linear-gradient(
+        135deg,
+        #222222,
+        #3d3d3d
+    );
+
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 35px;
+}
+
+.catering-contact-card > div {
+    max-width: 650px;
+}
+
+.catering-contact-card span {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+
+    opacity: 0.65;
+}
+
+.catering-contact-card h2 {
+    margin: 10px 0 14px;
+
+    font-size: 30px;
+    line-height: 1.25;
+}
+
+.catering-contact-card p {
+    margin: 0;
+
+    color: rgba(255, 255, 255, 0.72);
+
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.catering-contact-card .customer-primary-button {
+    flex-shrink: 0;
+
+    background: #ffffff;
+    color: #222;
+}
+
+.catering-contact-card .customer-primary-button:hover {
+    background: #eeeeee;
+}
+
+
+/* =========================================
+   CATERING TABLET
+========================================= */
+
+@media (max-width: 900px) {
+    .customer-page {
+        padding: 25px 4% 50px;
+    }
+
+    .customer-card-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .catering-event-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .catering-contact-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+
+/* =========================================
+   CATERING MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+    .customer-page {
+        padding: 20px 16px 45px;
+    }
+
+    .customer-page-header {
+        margin-bottom: 35px;
+    }
+
+    .customer-page-header h1 {
+        font-size: 34px;
+    }
+
+    .customer-page-header p {
+        font-size: 14px;
+    }
+
+    .customer-page-section {
+        margin-bottom: 40px;
+    }
+
+    .customer-section-heading h2 {
+        font-size: 25px;
+    }
+
+    .customer-card-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .customer-info-card {
+        padding: 20px;
+    }
+
+    .customer-info-card p {
+        min-height: auto;
+    }
+
+    .customer-info-card .customer-primary-button {
+        width: 100%;
+    }
+
+    .catering-event-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+
+    .catering-event-card {
+        min-height: 65px;
+        padding: 14px 12px;
+
+        font-size: 13px;
+    }
+
+    .catering-contact-card {
+        padding: 25px 20px;
+        border-radius: 18px;
+
+        gap: 22px;
+    }
+
+    .catering-contact-card h2 {
+        font-size: 24px;
+    }
+
+    .catering-contact-card p {
+        font-size: 13px;
+    }
+
+    .catering-contact-card .customer-primary-button {
+        width: 100%;
+    }
+}

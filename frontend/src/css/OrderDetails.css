@@ -1,7 +1,11 @@
+/* ========================================
+   ORDER DETAIL PAGE
+======================================== */
+
 .order-detail-page {
     min-height: 100vh;
     background: #f7f5f2;
-    padding: 40px 20px 80px;
+    padding: 40px 20px 90px;
 }
 
 .order-detail-container {
@@ -10,7 +14,9 @@
     margin: 0 auto;
 }
 
-/* HEADER */
+/* ========================================
+   HEADER
+======================================== */
 
 .order-detail-header {
     margin-bottom: 28px;
@@ -19,12 +25,13 @@
 .back-button {
     border: none;
     background: transparent;
-    color: #6b4f3a;
+    color: #6b4934;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     padding: 0;
     margin-bottom: 24px;
+    transition: color 0.2s ease;
 }
 
 .back-button:hover {
@@ -48,7 +55,9 @@
     line-height: 1.1;
 }
 
-/* CARD */
+/* ========================================
+   CARD
+======================================== */
 
 .order-detail-card {
     background: #ffffff;
@@ -59,7 +68,9 @@
     box-shadow: 0 8px 25px rgba(50, 35, 25, 0.05);
 }
 
-/* SUMMARY */
+/* ========================================
+   ORDER SUMMARY
+======================================== */
 
 .order-summary-top {
     display: flex;
@@ -79,6 +90,7 @@
     margin: 0;
     color: #2f241e;
     font-size: 24px;
+    word-break: break-word;
 }
 
 .order-date {
@@ -87,7 +99,9 @@
     font-size: 13px;
 }
 
-/* STATUS */
+/* ========================================
+   STATUS
+======================================== */
 
 .order-status {
     display: inline-flex;
@@ -126,7 +140,9 @@
     color: #b42318;
 }
 
-/* CARD HEADING */
+/* ========================================
+   CARD HEADING
+======================================== */
 
 .card-heading {
     margin-bottom: 22px;
@@ -138,7 +154,9 @@
     font-size: 21px;
 }
 
-/* INFORMATION */
+/* ========================================
+   INFORMATION
+======================================== */
 
 .customer-info,
 .order-info-grid,
@@ -169,7 +187,180 @@
     grid-column: 1 / -1;
 }
 
-/* ITEMS */
+/* ========================================
+   TRACKING
+======================================== */
+
+.order-tracking {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.tracking-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    min-height: 86px;
+}
+
+.tracking-line-wrapper {
+    position: relative;
+    width: 34px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.tracking-dot {
+    position: relative;
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eee9e4;
+    color: #a69b92;
+    font-size: 12px;
+    font-weight: 800;
+    transition: all 0.25s ease;
+}
+
+.tracking-line {
+    position: absolute;
+    top: 34px;
+    left: 50%;
+    width: 2px;
+    height: 52px;
+    transform: translateX(-50%);
+    background: #e5ddd6;
+}
+
+.tracking-line.completed {
+    background: #8c5b3c;
+}
+
+.tracking-step.completed .tracking-dot {
+    background: #8c5b3c;
+    color: #ffffff;
+}
+
+.tracking-step.current .tracking-dot {
+    background: #a06a3b;
+    color: #ffffff;
+    box-shadow: 0 0 0 5px #f5e9df;
+}
+
+.tracking-content {
+    padding-top: 2px;
+    padding-bottom: 18px;
+}
+
+.tracking-content strong {
+    display: block;
+    color: #9a918a;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.tracking-step.completed .tracking-content strong,
+.tracking-step.current .tracking-content strong {
+    color: #342820;
+}
+
+.tracking-content p {
+    margin: 0;
+    color: #9a918a;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.tracking-step.current .tracking-content p {
+    color: #6f655e;
+}
+
+.tracking-current {
+    display: inline-flex;
+    margin-top: 8px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #f5eee8;
+    color: #8c5b3c;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.tracking-refresh-info {
+    margin-top: 12px;
+    padding-top: 15px;
+    border-top: 1px solid #eee8e2;
+    color: #9a918a;
+    font-size: 12px;
+}
+
+/* ========================================
+   SPECIAL TRACKING STATES
+======================================== */
+
+.tracking-special {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 14px;
+}
+
+.tracking-special-icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.tracking-special strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 15px;
+}
+
+.tracking-special p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.tracking-cancelled {
+    background: #f1f1f1;
+    border: 1px solid #dddddd;
+    color: #666666;
+}
+
+.tracking-cancelled .tracking-special-icon {
+    background: #dddddd;
+    color: #666666;
+}
+
+.tracking-rejected {
+    background: #fff1f1;
+    border: 1px solid #f2cccc;
+    color: #9f3434;
+}
+
+.tracking-rejected .tracking-special-icon {
+    background: #f4cccc;
+    color: #a52a2a;
+}
+
+/* ========================================
+   ITEMS
+======================================== */
 
 .detail-items {
     display: flex;
@@ -233,7 +424,9 @@
     white-space: nowrap;
 }
 
-/* TOTAL */
+/* ========================================
+   TOTAL
+======================================== */
 
 .detail-total {
     display: flex;
@@ -255,7 +448,9 @@
     font-size: 22px;
 }
 
-/* PAYMENT */
+/* ========================================
+   PAYMENT
+======================================== */
 
 .rejection-box {
     margin-top: 20px;
@@ -303,7 +498,9 @@
     background: #f8f6f3;
 }
 
-/* PROOF GRID */
+/* ========================================
+   PROOF GRID
+======================================== */
 
 .proof-grid {
     display: grid;
@@ -324,7 +521,100 @@
     background: #f8f6f3;
 }
 
-/* MESSAGES */
+/* ========================================
+   DELIVERY PROOF UPLOAD
+======================================== */
+
+.delivery-proof-upload {
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 14px;
+    background: #faf8f5;
+    border: 1px solid #ebe2da;
+}
+
+.delivery-proof-upload input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px dashed #cdbfb3;
+    border-radius: 10px;
+    background: #ffffff;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.delivery-proof-upload p {
+    margin: 12px 0 0;
+    color: #756b64;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.delivery-proof-upload button {
+    width: 100%;
+    margin-top: 14px;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    background: #6b4934;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.delivery-proof-upload button:hover:not(:disabled) {
+    background: #543725;
+    transform: translateY(-1px);
+}
+
+.delivery-proof-upload button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   CANCEL
+======================================== */
+
+.cancel-order-button {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 18px;
+    background: #b42318;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.cancel-order-button:hover:not(:disabled) {
+    background: #941b12;
+    transform: translateY(-1px);
+}
+
+.cancel-order-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.cancel-message {
+    margin-top: 12px;
+    color: #6f655e;
+    font-size: 13px;
+}
+
+/* ========================================
+   FINAL MESSAGES
+======================================== */
 
 .order-message {
     display: flex;
@@ -379,7 +669,9 @@
     background: #f1cccc;
 }
 
-/* LOADING */
+/* ========================================
+   LOADING
+======================================== */
 
 .order-detail-loading {
     min-height: 70vh;
@@ -406,7 +698,9 @@
     }
 }
 
-/* ERROR */
+/* ========================================
+   ERROR
+======================================== */
 
 .order-detail-error {
     width: 100%;
@@ -461,11 +755,13 @@
     background: #543725;
 }
 
-/* MOBILE */
+/* ========================================
+   MOBILE
+======================================== */
 
 @media (max-width: 700px) {
     .order-detail-page {
-        padding: 25px 14px 60px;
+        padding: 25px 14px 80px;
     }
 
     .order-detail-title h1 {
@@ -496,6 +792,22 @@
 
     .info-address {
         grid-column: auto;
+    }
+
+    .tracking-step {
+        gap: 11px;
+    }
+
+    .tracking-content strong {
+        font-size: 13px;
+    }
+
+    .tracking-content p {
+        font-size: 11px;
+    }
+
+    .tracking-current {
+        font-size: 10px;
     }
 
     .detail-item {
@@ -556,5 +868,21 @@
         align-items: flex-start;
         flex-direction: column;
         gap: 6px;
+    }
+
+    .tracking-step {
+        min-height: 92px;
+    }
+
+    .tracking-line {
+        height: 58px;
+    }
+
+    .tracking-special {
+        padding: 15px;
+    }
+
+    .delivery-proof-upload {
+        padding: 14px;
     }
 }

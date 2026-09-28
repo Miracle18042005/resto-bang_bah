@@ -23,6 +23,10 @@ function OrderDetail({ orderId, onBack }) {
 
             const token = localStorage.getItem("token");
 
+            if (!token) {
+                throw new Error("Session login tidak ditemukan.");
+            }
+
             const response = await fetch(
                 `http://localhost:5000/api/orders/${orderId}`,
                 {
@@ -50,61 +54,12 @@ function OrderDetail({ orderId, onBack }) {
         }
     };
 
-    const handleDeliveryProof = async () => {
-        if (!deliveryProof) {
-            setProofMessage("Silahkan pilih foto terlebih dahulu.");
+    useEffect(() => {
+        if (!orderId) {
+            setError("ID pesanan tidak ditemukan.");
+            setLoading(false);
             return;
         }
-
-        try {
-            setUploadingProof(true);
-            setProofMessage("");
-
-            const token = localStorage.getItem("token");
-
-            const formData = new FornData();
-
-            formData.append(
-                "deliveryProofImage",
-                deliveryProof
-            );
-
-            const response = await fetch(
-                `http://localhost:5000/api/orders/${orderId}/delivery-proof`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
-                }
-            );
-
-            const data =  await response.json();
-
-            if (!response.ok) {
-                throw new Error(
-                    data.message ||
-                        "Gagal mengirim bukti penerimaan"
-                );
-            }
-
-            setProofMessage(
-                "Bukti penerimaan berhasil dikirim"
-            );
-
-            setDeliveryProof(null);
-
-            await fetchOrder(false);
-        } catch (err) {
-            setProofMessage(err.message);
-        } finally {
-            setUploadingProof(false);
-        }
-    };
-
-    useEffect(() => {
-        if (!orderId) return;
 
         fetchOrder(true);
 
@@ -121,7 +76,9 @@ function OrderDetail({ orderId, onBack }) {
     };
 
     const formatDate = (date) => {
-        if (!date) return "-";
+        if (!date) {
+            return "-";
+        }
 
         return new Date(date).toLocaleString("id-ID", {
             dateStyle: "medium",
@@ -194,10 +151,11 @@ function OrderDetail({ orderId, onBack }) {
     };
 
     /*
+     * ========================================
      * TRACKING PESANAN
-     *
-     * Urutannya mengikuti workflow backend kita.
+     * ========================================
      */
+
     const trackingSteps = [
         {
             status: "waiting_payment",
@@ -207,12 +165,14 @@ function OrderDetail({ orderId, onBack }) {
         {
             status: "payment_submitted",
             title: "Pembayaran Dikirim",
-            description: "Bukti pembayaran sedang menunggu verifikasi.",
+            description:
+                "Bukti pembayaran sedang menunggu verifikasi.",
         },
         {
             status: "payment_verified",
             title: "Pembayaran Terverifikasi",
-            description: "Pembayaran sudah dikonfirmasi.",
+            description:
+                "Pembayaran sudah dikonfirmasi oleh pihak resto.",
         },
         {
             status: "processing",
@@ -224,24 +184,29 @@ function OrderDetail({ orderId, onBack }) {
                 order?.orderType === "delivery"
                     ? "ready_for_delivery"
                     : "ready_for_pickup",
+
             title:
                 order?.orderType === "delivery"
                     ? "Siap Dikirim"
                     : "Siap Diambil",
+
             description:
                 order?.orderType === "delivery"
                     ? "Pesanan siap diserahkan kepada kurir."
                     : "Pesanan siap diambil.",
         },
+
         ...(order?.orderType === "delivery"
             ? [
                   {
                       status: "out_for_delivery",
                       title: "Sedang Diantar",
-                      description: "Pesanan sedang dalam perjalanan.",
+                      description:
+                          "Pesanan sedang dalam perjalanan.",
                   },
               ]
             : []),
+
         {
             status: "completed",
             title: "Pesanan Selesai",
@@ -250,14 +215,20 @@ function OrderDetail({ orderId, onBack }) {
     ];
 
     const getTrackingIndex = () => {
-        if (!order) return -1;
+        if (!order) {
+            return -1;
+        }
 
         if (order.status === "cancelled") {
             return -1;
         }
 
+        /*
+         * Kalau pembayaran ditolak,
+         * posisi tracking tetap di pembayaran.
+         */
         if (order.status === "payment_rejected") {
-            return 1;
+            return 0;
         }
 
         const index = trackingSteps.findIndex(
@@ -274,6 +245,11 @@ function OrderDetail({ orderId, onBack }) {
             return false;
         }
 
+        /*
+         * Payment rejected:
+         * pesanan sudah dibuat,
+         * tetapi pembayaran kembali ke tahap upload.
+         */
         if (order?.status === "payment_rejected") {
             return index === 0;
         }
@@ -281,48 +257,80 @@ function OrderDetail({ orderId, onBack }) {
         return index <= currentTrackingIndex;
     };
 
-    if (loading) {
-        return (
-            <div className="order-detail-page">
-                <div className="order-detail-loading">
-                    <div className="loading-spinner"></div>
-                    <p>Memuat detail pesanan...</p>
-                </div>
-            </div>
-        );
-    }
+    /*
+     * ========================================
+     * DELIVERY PROOF
+     * ========================================
+     */
 
-    if (error) {
-        return (
-            <div className="order-detail-page">
-                <div className="order-detail-error">
-                    <div className="error-icon">!</div>
+    const handleDeliveryProof = async () => {
+        if (!deliveryProof) {
+            setProofMessage(
+                "Silakan pilih foto terlebih dahulu."
+            );
+            return;
+        }
 
-                    <h2>Gagal Memuat Pesanan</h2>
+        const token = localStorage.getItem("token");
 
-                    <p>{error}</p>
+        if (!token) {
+            setProofMessage(
+                "Session login tidak ditemukan."
+            );
+            return;
+        }
 
-                    <button onClick={onBack}>
-                        Kembali ke Pesanan Saya
-                    </button>
-                </div>
-            </div>
-        );
-    }
+        try {
+            setUploadingProof(true);
+            setProofMessage("");
 
-    if (!order) {
-        return (
-            <div className="order-detail-page">
-                <div className="order-detail-error">
-                    <div className="error-icon">!</div>
+            const formData = new FormData();
 
-                    <h2>Pesanan Tidak Ditemukan</h2>
+            formData.append(
+                "deliveryProofImage",
+                deliveryProof
+            );
 
-                    <button onClick={onBack}>Kembali</button>
-                </div>
-            </div>
-        );
-    }
+            const response = await fetch(
+                `http://localhost:5000/api/orders/${orderId}/delivery-proof`,
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: formData,
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message ||
+                        "Gagal mengirim bukti penerimaan."
+                );
+            }
+
+            setProofMessage(
+                data.message ||
+                    "Bukti penerimaan berhasil dikirim."
+            );
+
+            setDeliveryProof(null);
+
+            await fetchOrder(false);
+        } catch (err) {
+            setProofMessage(err.message);
+        } finally {
+            setUploadingProof(false);
+        }
+    };
+
+    /*
+     * ========================================
+     * CANCEL ORDER
+     * ========================================
+     */
 
     const handleCancelOrder = async () => {
         const confirmed = window.confirm(
@@ -333,11 +341,18 @@ function OrderDetail({ orderId, onBack }) {
             return;
         }
 
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            setCancelMessage(
+                "Session login tidak ditemukan."
+            );
+            return;
+        }
+
         try {
             setCancelling(true);
             setCancelMessage("");
-
-            const token = localStorage.getItem("token");
 
             const response = await fetch(
                 `http://localhost:5000/api/orders/${orderId}/cancel`,
@@ -354,27 +369,97 @@ function OrderDetail({ orderId, onBack }) {
             if (!response.ok) {
                 throw new Error(
                     data.message ||
-                    "Gagal membatalkan pesanan"
+                        "Gagal membatalkan pesanan."
                 );
             }
 
             setCancelMessage(
-                "Pesanan berhasil dibatalkan"
+                data.message ||
+                    "Pesanan berhasil dibatalkan."
             );
 
             await fetchOrder(false);
         } catch (err) {
-            setCancelMessage (err.message);
+            setCancelMessage(err.message);
         } finally {
             setCancelling(false);
         }
     };
+
+    /*
+     * ========================================
+     * LOADING
+     * ========================================
+     */
+
+    if (loading) {
+        return (
+            <div className="order-detail-page">
+                <div className="order-detail-loading">
+                    <div className="loading-spinner"></div>
+
+                    <p>
+                        Memuat detail pesanan...
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    /*
+     * ========================================
+     * ERROR
+     * ========================================
+     */
+
+    if (error) {
+        return (
+            <div className="order-detail-page">
+                <div className="order-detail-error">
+                    <div className="error-icon">
+                        !
+                    </div>
+
+                    <h2>
+                        Gagal Memuat Pesanan
+                    </h2>
+
+                    <p>{error}</p>
+
+                    <button onClick={onBack}>
+                        Kembali ke Pesanan Saya
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (!order) {
+        return (
+            <div className="order-detail-page">
+                <div className="order-detail-error">
+                    <div className="error-icon">
+                        !
+                    </div>
+
+                    <h2>
+                        Pesanan Tidak Ditemukan
+                    </h2>
+
+                    <button onClick={onBack}>
+                        Kembali
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="order-detail-page">
             <div className="order-detail-container">
 
                 {/* HEADER */}
+
                 <div className="order-detail-header">
                     <button
                         className="back-button"
@@ -384,13 +469,18 @@ function OrderDetail({ orderId, onBack }) {
                     </button>
 
                     <div className="order-detail-title">
-                        <span>DETAIL PESANAN</span>
+                        <span>
+                            DETAIL PESANAN
+                        </span>
 
-                        <h1>Pesanan Kamu</h1>
+                        <h1>
+                            Pesanan Kamu
+                        </h1>
                     </div>
                 </div>
 
                 {/* ORDER SUMMARY */}
+
                 <div className="order-detail-card order-summary-card">
                     <div className="order-summary-top">
                         <div>
@@ -408,20 +498,29 @@ function OrderDetail({ orderId, onBack }) {
                                 order.status
                             )}`}
                         >
-                            {getStatusText(order.status)}
+                            {getStatusText(
+                                order.status
+                            )}
                         </span>
                     </div>
 
                     <div className="order-date">
-                        Dibuat pada {formatDate(order.createdAt)}
+                        Dibuat pada{" "}
+                        {formatDate(order.createdAt)}
                     </div>
                 </div>
 
                 {/* TRACKING */}
+
                 <div className="order-detail-card">
                     <div className="card-heading">
-                        <span>TRACKING PESANAN</span>
-                        <h2>Perjalanan Pesanan</h2>
+                        <span>
+                            TRACKING PESANAN
+                        </span>
+
+                        <h2>
+                            Perjalanan Pesanan
+                        </h2>
                     </div>
 
                     {order.status === "cancelled" ? (
@@ -431,13 +530,18 @@ function OrderDetail({ orderId, onBack }) {
                             </div>
 
                             <div>
-                                <strong>Pesanan Dibatalkan</strong>
+                                <strong>
+                                    Pesanan Dibatalkan
+                                </strong>
+
                                 <p>
-                                    Pesanan ini sudah dibatalkan.
+                                    Pesanan ini sudah
+                                    dibatalkan.
                                 </p>
                             </div>
                         </div>
-                    ) : order.status === "payment_rejected" ? (
+                    ) : order.status ===
+                      "payment_rejected" ? (
                         <div className="tracking-special tracking-rejected">
                             <div className="tracking-special-icon">
                                 !
@@ -451,6 +555,8 @@ function OrderDetail({ orderId, onBack }) {
                                 <p>
                                     {order.payment
                                         ?.rejectionReason ||
+                                        order.paymentInfo
+                                            ?.rejectionReason ||
                                         "Pembayaran perlu diperiksa kembali."}
                                 </p>
                             </div>
@@ -460,7 +566,9 @@ function OrderDetail({ orderId, onBack }) {
                             {trackingSteps.map(
                                 (step, index) => {
                                     const completed =
-                                        isStepCompleted(index);
+                                        isStepCompleted(
+                                            index
+                                        );
 
                                     const current =
                                         index ===
@@ -483,7 +591,8 @@ function OrderDetail({ orderId, onBack }) {
                                                 <div className="tracking-dot">
                                                     {completed
                                                         ? "✓"
-                                                        : index + 1}
+                                                        : index +
+                                                          1}
                                                 </div>
 
                                                 {index <
@@ -502,7 +611,9 @@ function OrderDetail({ orderId, onBack }) {
 
                                             <div className="tracking-content">
                                                 <strong>
-                                                    {step.title}
+                                                    {
+                                                        step.title
+                                                    }
                                                 </strong>
 
                                                 <p>
@@ -525,15 +636,22 @@ function OrderDetail({ orderId, onBack }) {
                     )}
 
                     <div className="tracking-refresh-info">
-                        Status pesanan diperbarui otomatis.
+                        Status pesanan diperbarui otomatis setiap
+                        beberapa detik.
                     </div>
                 </div>
 
                 {/* CUSTOMER */}
+
                 <div className="order-detail-card">
                     <div className="card-heading">
-                        <span>DATA PEMESAN</span>
-                        <h2>Informasi Pelanggan</h2>
+                        <span>
+                            DATA PEMESAN
+                        </span>
+
+                        <h2>
+                            Informasi Pelanggan
+                        </h2>
                     </div>
 
                     <div className="customer-info">
@@ -541,7 +659,8 @@ function OrderDetail({ orderId, onBack }) {
                             <span>Nama</span>
 
                             <strong>
-                                {order.customer?.name || "-"}
+                                {order.customer?.name ||
+                                    "-"}
                             </strong>
                         </div>
 
@@ -549,22 +668,31 @@ function OrderDetail({ orderId, onBack }) {
                             <span>Nomor HP</span>
 
                             <strong>
-                                {order.customer?.phone || "-"}
+                                {order.customer?.phone ||
+                                    "-"}
                             </strong>
                         </div>
                     </div>
                 </div>
 
                 {/* ORDER INFORMATION */}
+
                 <div className="order-detail-card">
                     <div className="card-heading">
-                        <span>INFORMASI PESANAN</span>
-                        <h2>Detail Pengiriman</h2>
+                        <span>
+                            INFORMASI PESANAN
+                        </span>
+
+                        <h2>
+                            Detail Pengiriman
+                        </h2>
                     </div>
 
                     <div className="order-info-grid">
                         <div className="info-item">
-                            <span>Jenis Pesanan</span>
+                            <span>
+                                Jenis Pesanan
+                            </span>
 
                             <strong>
                                 {getOrderTypeText(
@@ -574,7 +702,9 @@ function OrderDetail({ orderId, onBack }) {
                         </div>
 
                         <div className="info-item">
-                            <span>Metode Pembayaran</span>
+                            <span>
+                                Metode Pembayaran
+                            </span>
 
                             <strong>
                                 {getPaymentText(
@@ -583,7 +713,8 @@ function OrderDetail({ orderId, onBack }) {
                             </strong>
                         </div>
 
-                        {order.orderType === "delivery" && (
+                        {order.orderType ===
+                            "delivery" && (
                             <div className="info-item info-address">
                                 <span>
                                     Alamat Pengiriman
@@ -599,10 +730,16 @@ function OrderDetail({ orderId, onBack }) {
                 </div>
 
                 {/* ITEMS */}
+
                 <div className="order-detail-card">
                     <div className="card-heading">
-                        <span>ITEM PESANAN</span>
-                        <h2>Pesanan Kamu</h2>
+                        <span>
+                            ITEM PESANAN
+                        </span>
+
+                        <h2>
+                            Pesanan Kamu
+                        </h2>
                     </div>
 
                     <div className="detail-items">
@@ -637,9 +774,11 @@ function OrderDetail({ orderId, onBack }) {
 
                                     <strong>
                                         {formatPrice(
-                                            item.subtotal ??
-                                                item.price *
-                                                    item.quantity
+                                            Number(
+                                                item.subtotal ??
+                                                    item.price *
+                                                        item.quantity
+                                            )
                                         )}
                                     </strong>
                                 </div>
@@ -648,38 +787,55 @@ function OrderDetail({ orderId, onBack }) {
                     </div>
 
                     <div className="detail-total">
-                        <span>Total Pesanan</span>
+                        <span>
+                            Total Pesanan
+                        </span>
 
                         <strong>
-                            {formatPrice(order.total)}
+                            {formatPrice(
+                                order.totalAmount ??
+                                    order.total
+                            )}
                         </strong>
                     </div>
                 </div>
 
                 {/* PAYMENT */}
+
                 {order.payment && (
                     <div className="order-detail-card">
                         <div className="card-heading">
-                            <span>PEMBAYARAN</span>
-                            <h2>Informasi Pembayaran</h2>
+                            <span>
+                                PEMBAYARAN
+                            </span>
+
+                            <h2>
+                                Informasi Pembayaran
+                            </h2>
                         </div>
 
                         <div className="payment-detail">
                             <div className="info-item">
-                                <span>Metode</span>
+                                <span>
+                                    Metode
+                                </span>
 
                                 <strong>
                                     {getPaymentText(
-                                        order.payment.method
+                                        order.payment
+                                            .method
                                     )}
                                 </strong>
                             </div>
 
                             <div className="info-item">
-                                <span>Status</span>
+                                <span>
+                                    Status
+                                </span>
 
                                 <strong>
-                                    {order.payment.status ||
+                                    {order.payment
+                                        .status ||
                                         "-"}
                                 </strong>
                             </div>
@@ -687,18 +843,22 @@ function OrderDetail({ orderId, onBack }) {
                             {order.payment.amount !==
                                 undefined && (
                                 <div className="info-item">
-                                    <span>Jumlah</span>
+                                    <span>
+                                        Jumlah
+                                    </span>
 
                                     <strong>
                                         {formatPrice(
-                                            order.payment.amount
+                                            order.payment
+                                                .amount
                                         )}
                                     </strong>
                                 </div>
                             )}
                         </div>
 
-                        {order.payment.rejectionReason && (
+                        {order.payment
+                            .rejectionReason && (
                             <div className="rejection-box">
                                 <strong>
                                     Alasan Penolakan
@@ -713,7 +873,8 @@ function OrderDetail({ orderId, onBack }) {
                             </div>
                         )}
 
-                        {order.payment.proofImage && (
+                        {order.payment
+                            .proofImage && (
                             <div className="proof-section">
                                 <span>
                                     Bukti Pembayaran
@@ -729,13 +890,19 @@ function OrderDetail({ orderId, onBack }) {
                 )}
 
                 {/* PROOFS */}
+
                 {(order.pickupProofImage ||
                     order.courierProofImage ||
                     order.deliveryProofImage) && (
                     <div className="order-detail-card">
                         <div className="card-heading">
-                            <span>BUKTI PESANAN</span>
-                            <h2>Dokumentasi Pesanan</h2>
+                            <span>
+                                BUKTI PESANAN
+                            </span>
+
+                            <h2>
+                                Dokumentasi Pesanan
+                            </h2>
                         </div>
 
                         <div className="proof-grid">
@@ -782,50 +949,68 @@ function OrderDetail({ orderId, onBack }) {
                 )}
 
                 {/* CUSTOMER DELIVERY CONFIRMATION */}
-                {order.orderType === "delivery" &&
-                    order.status === "out_for_delivery" && (
+
+                {order.orderType ===
+                    "delivery" &&
+                    order.status ===
+                        "out_for_delivery" && (
                         <div className="order-detail-card">
                             <div className="card-heading">
-                                <span>KONFIRMASI PESANAN</span>
-                                <h2>Pesanan Sudah Diterima?</h2>
+                                <span>
+                                    KONFIRMASI PESANAN
+                                </span>
+
+                                <h2>
+                                    Pesanan Sudah Diterima?
+                                </h2>
                             </div>
 
                             <p>
-                                Jika pesanan sudah sampai, silahkan upload foto sebagai bukti bahwa pesanan sudah diterima
+                                Jika pesanan sudah sampai,
+                                silakan upload foto sebagai
+                                bukti bahwa pesanan sudah
+                                diterima.
                             </p>
 
                             <div className="delivery-proof-upload">
-                                <input 
-                                    type="file" 
-                                    accept="image/*" 
-                                    onChange={(e) => 
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) =>
                                         setDeliveryProof(
-                                            e.target.files?.[0] || null
+                                            e.target
+                                                .files?.[0] ||
+                                                null
                                         )
                                     }
                                 />
+
                                 {deliveryProof && (
                                     <p>
-                                        File dipilih:{""}
+                                        File dipilih:{" "}
                                         <strong>
-                                            {deliveryProof.name}
+                                            {
+                                                deliveryProof.name
+                                            }
                                         </strong>
                                     </p>
                                 )}
 
                                 <button
                                     type="button"
-                                    onClick={handleDeliveryProof}
+                                    onClick={
+                                        handleDeliveryProof
+                                    }
                                     disabled={
-                                        !deliveryProof || 
+                                        !deliveryProof ||
                                         uploadingProof
                                     }
                                 >
                                     {uploadingProof
-                                        ? "mengirim..."
-                                        : "Konfirmasi Pesanan Diterima"
-                                    }
+                                        ? "Mengirim..."
+                                        : "Konfirmasi Pesanan Diterima"}
                                 </button>
+
                                 {proofMessage && (
                                     <p>
                                         {proofMessage}
@@ -835,74 +1020,101 @@ function OrderDetail({ orderId, onBack }) {
                         </div>
                     )}
 
-                    {/* TAKEWAY INFORMATION */}
-                    {order.orderType === "takeway" && 
-                        order.status === "ready-for-pickup" && (
-                            <div className="order-detail-card">
-                                <div className="card-heading">
-                                    <span>SIAP DIAMBIL</span>
-                                    <h2>Pesanan Siap Diambil</h2>
+                {/* TAKEAWAY INFORMATION */}
+
+                {order.orderType ===
+                    "takeaway" &&
+                    order.status ===
+                        "ready_for_pickup" && (
+                        <div className="order-detail-card">
+                            <div className="card-heading">
+                                <span>
+                                    SIAP DIAMBIL
+                                </span>
+
+                                <h2>
+                                    Pesanan Siap Diambil
+                                </h2>
+                            </div>
+
+                            <div className="tracking-special">
+                                <div className="tracking-special-icon">
+                                    ✓
                                 </div>
 
-                                <div className="tracking-special">
-                                    <div className="tracking-special-icon">
-                                        ✓
-                                    </div>
+                                <div>
+                                    <strong>
+                                        Pesanan kamu sudah
+                                        siap!
+                                    </strong>
 
-                                    <div>
-                                        <strong>
-                                            Pesanan kamu udah siap!
-                                        </strong>
+                                    <p>
+                                        Silakan datang ke
+                                        Resto Bang Bah untuk
+                                        mengambil pesanan.
+                                    </p>
 
-                                        <p>
-                                            Silahkan datang ke Resto Bang Bah untuk mengambil pesanan.
-                                        </p>
-                                        <p>
-                                            tunjukkan nomor pesanan berikut kepada pihak resto:
-                                        </p>
+                                    <p>
+                                        Tunjukkan nomor
+                                        pesanan berikut
+                                        kepada pihak resto:
+                                    </p>
 
-                                        <strong>
-                                            {order.orderNumber}
-                                        </strong>
-                                    </div>
+                                    <strong>
+                                        {order.orderNumber}
+                                    </strong>
                                 </div>
                             </div>
+                        </div>
+                    )}
+
+                {/* CUSTOMER CANCEL */}
+
+                {[
+                    "waiting_payment",
+                    "payment_submitted",
+                    "payment_rejected",
+                ].includes(order.status) && (
+                    <div className="order-detail-card">
+                        <div className="card-heading">
+                            <span>
+                                AKSI PESANAN
+                            </span>
+
+                            <h2>
+                                Batalkan Pesanan
+                            </h2>
+                        </div>
+
+                        <p>
+                            Pesanan masih dapat dibatalkan
+                            karena belum mulai diproses oleh
+                            pihak Resto Bang Bah.
+                        </p>
+
+                        <button
+                            type="button"
+                            className="cancel-order-button"
+                            onClick={
+                                handleCancelOrder
+                            }
+                            disabled={cancelling}
+                        >
+                            {cancelling
+                                ? "Membatalkan..."
+                                : "Batalkan Pesanan"}
+                        </button>
+
+                        {cancelMessage && (
+                            <p className="cancel-message">
+                                {cancelMessage}
+                            </p>
                         )}
-
-                        {/* CUSTOMER CANCEL */}
-                        {[
-                            "paiting_payment",
-                            "payment_submitted",
-                            "payment_rejected",
-                        ].includes(order.status) && (
-                            <div className="order-detail-card">
-                                <div className="card-heading">
-                                    <span>AKSI PESANAN</span>
-                                    <h2>Batalkan Pesanan</h2>
-                                </div>
-
-                                <p>
-                                    Pesanan masih dapat dibatalkan karena belum mulai diproses oleh pihak Resto Bang Bah
-                                </p>
-
-                                <button
-                                    type="button"
-                                    onClick={handleCancelOrder}
-                                    disabled={cancelling}
-                                >
-                                    {cancelling
-                                        ? "Membatalkan..."
-                                        : "Batalkan Pesanan"}
-                                </button>
-
-                                {cancelMessage && (
-                                    <p>{cancelMessage}</p>
-                                )}
-                            </div>
-                        )
-                        }
+                    </div>
+                )}
 
                 {/* FINAL MESSAGE */}
+
                 {order.status === "completed" && (
                     <div className="order-message success-message">
                         <div>✓</div>

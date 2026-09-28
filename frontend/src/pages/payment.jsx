@@ -7,7 +7,7 @@ function Payment({ order, onBack, onPaymentSubmitted }) {
     const [error, setError] = useState("");
 
     const sendPaymentToWhatsApp = () => {
-        const phoneNumber = "085123607185";
+        const phoneNumber = "6285123607185";
 
         const itemsText = order.items
             .map(
@@ -18,35 +18,61 @@ function Payment({ order, onBack, onPaymentSubmitted }) {
             )
             .join("\n");
 
-            const OrderTypeText = 
-                order.orderType === "delivery"
-                    ? "Delivery"
-                    : "Takeaway";
+        const orderTypeText =
+            order.orderType === "delivery"
+                ? "Delivery"
+                : "Takeaway";
 
-            const message = `Halo Bang Bah 
-            Saya sudah melakukan pembayaran untuk pesanan.
-            
-            Nomor Pesanan: ${order.orderNumber}
-            
-            Pesanan:
-            ${itemsText}
-            
-            Total: Rp ${Number(order.total || 0).toLocaleString("id-ID")}
-            
-            Tipe: ${OrderTypeText}
-            Pembayaran: Bank Transfer
-            
-            Bukti Pembayaran sudah saya upload melalui website.
-            
-            mmohon dicek dan diproses ya. Terima Kasihh`;
+        const message = `Halo Bang Bah 👋
 
-            const whatsappUrl = `https://wa.me/${phoneNumber}${text=$(encodeURIComponent(
-                message
-            )
+Saya sudah melakukan pembayaran untuk pesanan.
+
+Nomor Pesanan: ${order.orderNumber}
+
+Pesanan:
+${itemsText}
+
+Total: Rp ${Number(order.total || 0).toLocaleString(
+            "id-ID"
+        )}
+
+Tipe: ${orderTypeText}
+Pembayaran: Bank Transfer
+
+Bukti pembayaran sudah saya upload melalui website.
+
+Mohon dicek dan diproses ya. Terima kasih 🙏`;
+
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+            message
         )}`;
 
-        window.open(whatsappUrl, "_blank")
-    }
+        window.open(whatsappUrl, "_blank");
+    };
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0] || null;
+
+        setError("");
+
+        if (!selectedFile) {
+            setFile(null);
+            return;
+        }
+
+        const maxSize = 5 * 1024 * 1024;
+
+        if (selectedFile.size > maxSize) {
+            setError(
+                "Ukuran file terlalu besar. Maksimal 5 MB."
+            );
+            e.target.value = "";
+            setFile(null);
+            return;
+        }
+
+        setFile(selectedFile);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -54,14 +80,18 @@ function Payment({ order, onBack, onPaymentSubmitted }) {
         setError("");
 
         if (!file) {
-            setError("Silakan pilih bukti transfer terlebih dahulu.");
+            setError(
+                "Silakan pilih bukti transfer terlebih dahulu."
+            );
             return;
         }
 
         const token = localStorage.getItem("token");
 
         if (!token) {
-            setError("Session login tidak ditemukan.");
+            setError(
+                "Session login tidak ditemukan."
+            );
             return;
         }
 
@@ -89,11 +119,13 @@ function Payment({ order, onBack, onPaymentSubmitted }) {
 
             if (!response.ok) {
                 throw new Error(
-                    result.message || "Gagal mengirim bukti pembayaran"
+                    result.message ||
+                        "Gagal mengirim bukti pembayaran"
                 );
             }
 
             onPaymentSubmitted(result.data);
+
             sendPaymentToWhatsApp();
         } catch (err) {
             setError(err.message);
@@ -103,153 +135,356 @@ function Payment({ order, onBack, onPaymentSubmitted }) {
     };
 
     return (
-        <div className="checkout-page">
-            <div className="checkout-container">
+        <div className="payment-page">
+            <div className="payment-container">
+
+                {/* BACK */}
                 <button
-                    className="back-button"
+                    className="payment-back-button"
                     onClick={onBack}
                     disabled={loading}
                 >
-                    ← Kembali
+                    <span>←</span>
+                    Kembali
                 </button>
 
-                <div className="checkout-header">
-                    <span>PEMBAYARAN</span>
+                {/* HEADER */}
+                <header className="payment-header">
+                    <span className="payment-eyebrow">
+                        PEMBAYARAN
+                    </span>
 
-                    <h1>Upload Bukti Transfer</h1>
+                    <h1>
+                        Selesaikan
+                        <br />
+                        Pembayaran Kamu.
+                    </h1>
 
                     <p>
                         Upload bukti pembayaran untuk pesanan{" "}
-                        <strong>{order.orderNumber}</strong>
+                        <strong>
+                            {order.orderNumber}
+                        </strong>
                     </p>
+                </header>
+
+                {/* PAYMENT STATUS */}
+                <div className="payment-status">
+                    <div className="payment-status-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <strong>
+                            Pesanan berhasil dibuat
+                        </strong>
+
+                        <span>
+                            Silakan lakukan pembayaran sesuai
+                            nominal berikut.
+                        </span>
+                    </div>
                 </div>
 
-                <div className="checkout-grid">
-                    <section className="checkout-card">
-                        <h2>Detail Pembayaran</h2>
-                            <div className="payment-info">
-                                <h3>Transfer Pembayaran</h3>
+                <div className="payment-grid">
 
-                                <p>
-                                    Silahkan transfer sesuai dengan total pesanan ke rekening berikut :
-                                </p>
+                    {/* LEFT */}
+                    <section className="payment-main">
 
-                                <div className="payment-bank">
-                                    <span>Bank</span>
-                                    <strong>BCA</strong>
+                        {/* PAYMENT INFORMATION */}
+                        <div className="payment-card">
+
+                            <div className="payment-section-heading">
+                                <div className="payment-section-number">
+                                    01
                                 </div>
 
-                                <div className="payment-bank">
-                                    <span>Nomor Rekening</span>
-                                    <strong>1234567890</strong>
-                                </div>
+                                <div>
+                                    <h2>
+                                        Detail Pembayaran
+                                    </h2>
 
-                                <div className="">
-                                    <span>Atas nama</span>
-                                    <strong>BangBah</strong>
+                                    <p>
+                                        Transfer sesuai nominal
+                                        pesanan kamu.
+                                    </p>
                                 </div>
+                            </div>
 
-                                <div className="payment-total-box">
-                                    <span>Total yang harus dibayar</span>
+                            {/* TOTAL */}
+                            <div className="payment-total-box">
+                                <div>
+                                    <span>
+                                        TOTAL YANG HARUS DIBAYAR
+                                    </span>
+
                                     <strong>
-                                        Rp {order.total.toLocaleString("id-ID")}
+                                        Rp{" "}
+                                        {Number(
+                                            order.total || 0
+                                        ).toLocaleString(
+                                            "id-ID"
+                                        )}
                                     </strong>
                                 </div>
 
-                                <div className="payment-qris">
-                                    <h3>Atau bayar dengan Qris</h3>
-
-                                    <p>
-                                        Scan QRIS dibawah menggunakan aplikasi pembayaran kamu.
-                                    </p>
-
-                                    <img 
-                                        src="/qris-bangbah.png"
-                                        alt="Qris Bang Bah"
-                                        className="qris-image" 
-                                    />
-
-                                    <small>
-                                        Setelah pembayaran berhasil, upload bukti pembayaran di bawah.
-                                    </small>
-
+                                <div className="payment-total-tag">
+                                    Bank Transfer
                                 </div>
                             </div>
 
-                        <div className="summary-item">
-                            <div>
-                                <strong>Total Pesanan</strong>
+                            {/* BANK */}
+                            <div className="bank-section">
+
+                                <div className="bank-section-title">
+                                    <span>
+                                        🏦
+                                    </span>
+
+                                    <div>
+                                        <strong>
+                                            Transfer Bank
+                                        </strong>
+
+                                        <small>
+                                            Gunakan rekening berikut
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div className="bank-detail">
+                                    <span>
+                                        Bank
+                                    </span>
+
+                                    <strong>
+                                        BCA
+                                    </strong>
+                                </div>
+
+                                <div className="bank-detail">
+                                    <span>
+                                        Nomor Rekening
+                                    </span>
+
+                                    <strong className="account-number">
+                                        1234567890
+                                    </strong>
+                                </div>
+
+                                <div className="bank-detail">
+                                    <span>
+                                        Atas Nama
+                                    </span>
+
+                                    <strong>
+                                        Bang Bah
+                                    </strong>
+                                </div>
+
                             </div>
 
-                            <strong>
-                                Rp{" "}
-                                {order.total.toLocaleString(
-                                    "id-ID"
-                                )}
-                            </strong>
+                            {/* QRIS */}
+                            <div className="qris-section">
+
+                                <div className="qris-heading">
+                                    <span>
+                                        ATAU BAYAR DENGAN
+                                    </span>
+
+                                    <h3>
+                                        QRIS
+                                    </h3>
+
+                                    <p>
+                                        Scan kode QR berikut
+                                        menggunakan aplikasi
+                                        pembayaran kamu.
+                                    </p>
+                                </div>
+
+                                <div className="qris-wrapper">
+                                    <img
+                                        src="/qris-bangbah.png"
+                                        alt="QRIS Bang Bah"
+                                        className="qris-image"
+                                    />
+                                </div>
+
+                                <small className="qris-note">
+                                    Pastikan nominal pembayaran
+                                    sesuai dengan total pesanan.
+                                </small>
+
+                            </div>
                         </div>
 
-                        <div className="form-group">
-                            <label>
-                                Bukti Transfer
+                        {/* UPLOAD */}
+                        <div className="payment-card">
+
+                            <div className="payment-section-heading">
+                                <div className="payment-section-number">
+                                    02
+                                </div>
+
+                                <div>
+                                    <h2>
+                                        Upload Bukti Pembayaran
+                                    </h2>
+
+                                    <p>
+                                        Kirim screenshot atau foto
+                                        bukti pembayaran kamu.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <label
+                                className={
+                                    file
+                                        ? "upload-box has-file"
+                                        : "upload-box"
+                                }
+                            >
+                                <input
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    onChange={handleFileChange}
+                                    disabled={loading}
+                                />
+
+                                {file ? (
+                                    <>
+                                        <div className="upload-success-icon">
+                                            ✓
+                                        </div>
+
+                                        <strong>
+                                            Bukti pembayaran
+                                            dipilih
+                                        </strong>
+
+                                        <span>
+                                            {file.name}
+                                        </span>
+
+                                        <small>
+                                            Klik untuk mengganti
+                                            file
+                                        </small>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="upload-icon">
+                                            ↑
+                                        </div>
+
+                                        <strong>
+                                            Pilih bukti pembayaran
+                                        </strong>
+
+                                        <span>
+                                            Klik di sini untuk
+                                            memilih foto
+                                        </span>
+
+                                        <small>
+                                            JPG, PNG, WebP ·
+                                            Maksimal 5 MB
+                                        </small>
+                                    </>
+                                )}
                             </label>
 
-                            <input
-                                type="file"
-                                accept="image/jpeg,image/png,image/webp"
-                                onChange={(e) =>
-                                    setFile(
-                                        e.target.files[0] || null
-                                    )
+                            {file && (
+                                <div className="selected-file">
+                                    <span>
+                                        File siap dikirim
+                                    </span>
+
+                                    <strong>
+                                        {file.name}
+                                    </strong>
+                                </div>
+                            )}
+
+                            {error && (
+                                <div className="payment-error">
+                                    <span>!</span>
+
+                                    <p>
+                                        {error}
+                                    </p>
+                                </div>
+                            )}
+
+                            <button
+                                className="payment-submit"
+                                onClick={handleSubmit}
+                                disabled={
+                                    loading || !file
                                 }
-                            />
+                            >
+                                <span>
+                                    {loading
+                                        ? "Mengirim Bukti..."
+                                        : "Kirim Bukti Pembayaran"}
+                                </span>
 
-                            <small>
-                                JPG, PNG, atau WebP. Maksimal 5 MB.
-                            </small>
-                        </div>
+                                {!loading && (
+                                    <span className="payment-submit-arrow">
+                                        →
+                                    </span>
+                                )}
+                            </button>
 
-                        {file && (
-                            <p>
-                                File dipilih:{" "}
-                                <strong>{file.name}</strong>
+                            <p className="payment-submit-note">
+                                Setelah dikirim, bukti pembayaran
+                                akan diperiksa oleh admin.
                             </p>
-                        )}
 
-                        {error && (
-                            <div className="auth-error">
-                                {error}
-                            </div>
-                        )}
-
-                        <button
-                            className="checkout-submit"
-                            onClick={handleSubmit}
-                            disabled={loading}
-                        >
-                            {loading
-                                ? "Mengirim..."
-                                : "Kirim Bukti Transfer"}
-                        </button>
+                        </div>
                     </section>
 
-                    <aside className="checkout-card order-summary">
-                        <h2>Pesanan</h2>
+                    {/* RIGHT */}
+                    <aside className="payment-card payment-summary">
+
+                        <div className="summary-header">
+                            <div>
+                                <span>
+                                    PESANAN KAMU
+                                </span>
+
+                                <h2>
+                                    Ringkasan
+                                </h2>
+                            </div>
+
+                            <div className="summary-order-number">
+                                {order.orderNumber}
+                            </div>
+                        </div>
 
                         <div className="summary-items">
+
                             {order.items.map((item) => (
                                 <div
                                     className="summary-item"
-                                    key={item.menuId}
+                                    key={
+                                        item.menuId ||
+                                        item._id
+                                    }
                                 >
-                                    <div>
+                                    <div className="summary-item-info">
                                         <strong>
                                             {item.name}
                                         </strong>
 
                                         <span>
                                             {item.quantity} × Rp{" "}
-                                            {item.price.toLocaleString(
+                                            {Number(
+                                                item.price
+                                            ).toLocaleString(
                                                 "id-ID"
                                             )}
                                         </span>
@@ -257,24 +492,49 @@ function Payment({ order, onBack, onPaymentSubmitted }) {
 
                                     <strong>
                                         Rp{" "}
-                                        {item.subtotal.toLocaleString(
+                                        {Number(
+                                            item.subtotal ??
+                                                item.price *
+                                                    item.quantity
+                                        ).toLocaleString(
                                             "id-ID"
                                         )}
                                     </strong>
                                 </div>
                             ))}
+
                         </div>
 
+                        <div className="summary-divider" />
+
                         <div className="summary-total">
-                            <span>Total</span>
+                            <span>
+                                Total Pesanan
+                            </span>
 
                             <strong>
                                 Rp{" "}
-                                {order.total.toLocaleString(
+                                {Number(
+                                    order.total || 0
+                                ).toLocaleString(
                                     "id-ID"
                                 )}
                             </strong>
                         </div>
+
+                        <div className="summary-order-type">
+                            <span>
+                                Tipe Pesanan
+                            </span>
+
+                            <strong>
+                                {order.orderType ===
+                                "delivery"
+                                    ? "🛵 Delivery"
+                                    : "🥡 Takeaway"}
+                            </strong>
+                        </div>
+
                     </aside>
                 </div>
             </div>

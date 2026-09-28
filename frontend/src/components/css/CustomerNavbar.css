@@ -1,0 +1,864 @@
+/* =========================================
+   CUSTOMER NAVBAR
+========================================= */
+
+.customer-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    width: 100%;
+    min-height: 78px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 12px max(28px, 5vw);
+
+    background: rgba(255, 255, 255, 0.94);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border-bottom: 1px solid rgba(40, 30, 23, 0.08);
+
+    box-shadow:
+        0 4px 25px rgba(39, 29, 22, 0.035);
+}
+
+
+/* =========================================
+   BRAND
+========================================= */
+
+.customer-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #27211d;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    transition:
+        transform 0.2s ease;
+}
+
+.customer-brand:hover {
+    transform: translateY(-1px);
+}
+
+.brand-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: #fff0dc;
+
+    font-size: 20px;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(191, 112, 48, 0.08);
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.customer-brand .brand-main {
+    color: #29221e;
+
+    font-size: 21px;
+    line-height: 1;
+
+    font-weight: 850;
+
+    letter-spacing: -0.5px;
+}
+
+.customer-brand .brand-sub {
+    margin-top: 5px;
+
+    color: #8a7f76;
+
+    font-size: 10px;
+    line-height: 1;
+
+    font-weight: 500;
+
+    letter-spacing: 0.25px;
+}
+
+
+/* =========================================
+   NAV LINKS
+========================================= */
+
+.customer-nav-links {
+    display: flex;
+    align-items: center;
+
+    gap: 3px;
+
+    margin-left: auto;
+    margin-right: 35px;
+}
+
+.customer-nav-links button {
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    min-height: 40px;
+
+    padding: 8px 13px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: transparent;
+
+    color: #5e554e;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.customer-nav-links button:hover {
+    color: #a75e29;
+
+    background: #fff6ea;
+
+    transform: translateY(-1px);
+}
+
+.customer-nav-links button.active {
+    color: #a75e29;
+
+    background: #fff4e4;
+}
+
+.more-trigger {
+    padding-right: 10px !important;
+}
+
+.nav-arrow {
+    color: #9a8d83;
+
+    font-size: 13px;
+
+    transition:
+        transform 0.2s ease;
+}
+
+.more-trigger.active .nav-arrow {
+    color: #b86b30;
+}
+
+
+/* =========================================
+   RIGHT ACTIONS
+========================================= */
+
+.customer-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+
+/* =========================================
+   CART BUTTON
+========================================= */
+
+.customer-cart-button {
+    position: relative;
+
+    width: 43px;
+    height: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #ebe4dd;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    color: #332a24;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.customer-cart-button:hover {
+    transform: translateY(-2px);
+
+    border-color: #e1c5a7;
+
+    background: #fffaf5;
+
+    box-shadow:
+        0 7px 18px rgba(50, 35, 24, 0.08);
+}
+
+.cart-icon {
+    font-size: 17px;
+
+    line-height: 1;
+}
+
+.cart-count {
+    position: absolute;
+
+    top: -6px;
+    right: -6px;
+
+    min-width: 19px;
+    height: 19px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 5px;
+
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+
+    background: #b9652b;
+    color: #ffffff;
+
+    font-size: 9px;
+    font-weight: 850;
+
+    box-shadow:
+        0 4px 10px rgba(185, 101, 43, 0.25);
+}
+
+
+/* =========================================
+   ACCOUNT BUTTON
+========================================= */
+
+.customer-account-button {
+    min-height: 43px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 0 15px;
+
+    border: 1px solid #e7ded6 !important;
+    border-radius: 12px;
+
+    background: #ffffff !important;
+    color: #332a24 !important;
+
+    font-size: 12px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.customer-account-button:hover {
+    transform: translateY(-2px);
+
+    border-color: #d9b891 !important;
+
+    background: #fffaf5 !important;
+
+    box-shadow:
+        0 7px 18px rgba(50, 35, 24, 0.07);
+}
+
+.account-icon {
+    font-size: 14px;
+}
+
+.account-name {
+    max-width: 100px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   MORE MENU OVERLAY
+========================================= */
+
+.customer-more-overlay {
+    position: fixed;
+    inset: 0;
+
+    z-index: 1100;
+
+    background: rgba(24, 18, 14, 0.28);
+
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+
+    animation:
+        moreOverlayIn 0.2s ease;
+}
+
+@keyframes moreOverlayIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================
+   MORE MENU
+========================================= */
+
+.customer-more-menu {
+    position: fixed;
+
+    top: 87px;
+    right: max(28px, 5vw);
+
+    z-index: 1200;
+
+    width: 355px;
+    max-height: calc(100vh - 115px);
+
+    overflow-y: auto;
+
+    padding: 10px;
+
+    border: 1px solid #eee4da;
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 25px 70px rgba(38, 27, 19, 0.17);
+
+    animation:
+        moreMenuIn 0.22s ease;
+}
+
+@keyframes moreMenuIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* =========================================
+   MORE HEADER
+========================================= */
+
+.more-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 12px 12px 15px;
+
+    border-bottom: 1px solid #eee7df;
+}
+
+.more-menu-header > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.more-menu-header span {
+    color: #b96b32;
+
+    font-size: 9px;
+    font-weight: 850;
+
+    letter-spacing: 1.5px;
+}
+
+.more-menu-header strong {
+    margin-top: 4px;
+
+    color: #2b241f;
+
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.more-close {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #f7f3ef;
+    color: #5e554e;
+
+    font-size: 22px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.more-close:hover {
+    background: #f0e6dc;
+    color: #a65d29;
+
+    transform: rotate(3deg);
+}
+
+
+/* =========================================
+   MORE ITEMS
+========================================= */
+
+.customer-more-menu > button {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 3px;
+
+    padding: 11px;
+
+    border: none;
+    border-radius: 13px;
+
+    background: transparent;
+
+    color: #2f2823;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.customer-more-menu > button:hover {
+    background: #fff7ed;
+
+    transform: translateX(2px);
+}
+
+.more-icon {
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #f8f1e9;
+
+    font-size: 17px;
+}
+
+.customer-more-menu > button > div {
+    min-width: 0;
+
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.customer-more-menu > button strong {
+    color: #332a25;
+
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.customer-more-menu > button small {
+    margin-top: 3px;
+
+    color: #91867d;
+
+    font-size: 10px;
+    line-height: 1.3;
+}
+
+.more-arrow {
+    color: #b6aaa0;
+
+    font-size: 16px;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+.customer-more-menu > button:hover .more-arrow {
+    color: #b86b30;
+
+    transform: translateX(3px);
+}
+
+
+/* =========================================
+   MOBILE BOTTOM NAV
+========================================= */
+
+.customer-bottom-nav {
+    display: none;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1050px) {
+    .customer-navbar {
+        padding-left: 28px;
+        padding-right: 28px;
+    }
+
+    .customer-nav-links {
+        margin-right: 15px;
+    }
+
+    .customer-nav-links button {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .customer-account-button {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+    .customer-navbar {
+        min-height: 66px;
+
+        padding:
+            9px 16px;
+
+        box-shadow:
+            0 4px 20px rgba(39, 29, 22, 0.05);
+    }
+
+    .brand-icon {
+        width: 37px;
+        height: 37px;
+
+        border-radius: 11px;
+
+        font-size: 18px;
+    }
+
+    .customer-brand .brand-main {
+        font-size: 18px;
+    }
+
+    .customer-brand .brand-sub {
+        margin-top: 4px;
+
+        font-size: 8px;
+    }
+
+    .customer-nav-links {
+        display: none;
+    }
+
+    .customer-nav-actions {
+        gap: 7px;
+    }
+
+    .customer-cart-button {
+        width: 39px;
+        height: 39px;
+
+        border-radius: 11px;
+    }
+
+    .customer-account-button {
+        min-height: 39px;
+
+        max-width: 115px;
+
+        padding:
+            0 11px;
+
+        border-radius: 11px;
+
+        font-size: 11px;
+    }
+
+    .account-icon {
+        font-size: 13px;
+    }
+
+    .account-name {
+        max-width: 75px;
+    }
+
+
+    /* =========================
+       MORE MENU MOBILE
+    ========================= */
+
+    .customer-more-menu {
+        top: auto;
+        right: 12px;
+        bottom: 80px;
+
+        width: calc(100% - 24px);
+
+        max-height: calc(100vh - 110px);
+
+        border-radius: 19px;
+    }
+
+
+    /* =========================
+       BOTTOM NAV
+    ========================= */
+
+    .customer-bottom-nav {
+        position: fixed;
+
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        z-index: 1000;
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(5, 1fr);
+
+        height: 70px;
+
+        padding:
+            6px 5px
+            calc(6px + env(safe-area-inset-bottom));
+
+        background: rgba(255, 255, 255, 0.97);
+
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+
+        border-top: 1px solid #ebe3db;
+
+        box-shadow:
+            0 -8px 30px rgba(45, 32, 23, 0.07);
+    }
+
+    .customer-bottom-nav button {
+        position: relative;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        gap: 3px;
+
+        border: none;
+        background: transparent;
+
+        color: #91867d;
+
+        cursor: pointer;
+
+        transition:
+            color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .customer-bottom-nav button:hover {
+        color: #a85e29;
+
+        transform: translateY(-1px);
+    }
+
+    .bottom-nav-icon {
+        font-size: 18px;
+
+        line-height: 1;
+    }
+
+    .customer-bottom-nav button small {
+        font-size: 9px;
+
+        font-weight: 650;
+    }
+
+
+    /* =========================
+       MOBILE CART
+    ========================= */
+
+    .bottom-cart {
+        color: #a85e29 !important;
+    }
+
+    .bottom-cart-circle {
+        position: relative;
+
+        width: 43px;
+        height: 43px;
+
+        margin-top: -21px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: 4px solid #f7f5f2;
+        border-radius: 50%;
+
+        background: #2d2520;
+
+        color: #ffffff;
+
+        font-size: 18px;
+
+        box-shadow:
+            0 8px 20px rgba(45, 37, 32, 0.22);
+    }
+
+    .bottom-cart b {
+        position: absolute;
+
+        top: -5px;
+        right: -5px;
+
+        min-width: 17px;
+        height: 17px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 0 4px;
+
+        border: 2px solid #ffffff;
+        border-radius: 999px;
+
+        background: #b9652b;
+        color: #ffffff;
+
+        font-size: 8px;
+        font-weight: 850;
+    }
+
+    .bottom-cart small {
+        margin-top: 3px;
+
+        color: #a85e29;
+    }
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 380px) {
+    .customer-navbar {
+        padding-left: 11px;
+        padding-right: 11px;
+    }
+
+    .brand-icon {
+        display: none;
+    }
+
+    .customer-brand .brand-main {
+        font-size: 17px;
+    }
+
+    .customer-brand .brand-sub {
+        font-size: 7px;
+    }
+
+    .customer-account-button {
+        max-width: 95px;
+    }
+
+    .account-name {
+        max-width: 60px;
+    }
+}
